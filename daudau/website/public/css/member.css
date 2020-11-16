@@ -1,0 +1,201 @@
+.topchef-tabs .tab{
+  -webkit-transition:all ease-in-out .3s;
+  transition:all ease-in-out .3s
+}
+.topchef-tabs .tab:hover{
+  cursor:pointer;
+  color:#777
+}
+.topchef-tabs .tab.active{
+  border-radius:4px
+}
+.top-member-container{
+  margin-bottom:30px
+}
+.top-member-container .wrapper{
+  padding:15px 0
+}
+.top-member-container .member-block{
+  padding:0 5px 5px;
+  display:inline-block;
+  width:25%
+}
+.top-member-container .member-block.place-holder{
+  margin-right:-4px
+}
+.top-member-container .member-block .line{
+  height:10px;
+  margin-bottom:5px;
+  border-radius:4px
+}
+.top-member-container .member-block .line:last-child{
+  margin-bottom:0
+}
+.top-member-container .member-block.is-featured{
+  width:33.33333%
+}
+.top-member-container .member-block.is-featured .profile .information .name{
+  max-width:170px
+}
+.top-member-container .member{
+  width:100%;
+  padding:10px;
+  min-height:80px;
+  overflow:hidden;
+  border:1px solid #cecece;
+  position:relative;
+  display:inline-block;
+  -webkit-transition:all ease-in-out .3s;
+  transition:all ease-in-out .3s
+}
+.top-member-container .member:hover{
+  background-color:#f5f5f5
+}
+.top-member-container .member .profile{
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:flex;
+  -webkit-box-align:center;
+  -ms-flex-align:center;
+  align-items:center
+}
+.top-member-container .member .profile .avatar{
+  height:60px;
+  width:60px;
+  min-width:60px;
+  border-radius:50%;
+  overflow:hidden;
+  -webkit-transition:all ease-in-out .3s;
+  transition:all ease-in-out .3s
+}
+.top-member-container .member .profile .avatar:hover{
+  -webkit-transform:scale(1.06);
+  -ms-transform:scale(1.06);
+  transform:scale(1.06)
+}
+.top-member-container .member .profile .avatar img{
+  height:100%;
+  width:100%;
+  -o-object-fit:cover;
+  object-fit:cover
+}
+.top-member-container .member .profile .information{
+  padding-left:10px;
+  line-height:20px;
+  width:100%
+}
+.top-member-container .member .profile .information .rank{
+  position:absolute;
+  top:10px;
+  right:10px;
+  height:25px;
+  width:25px;
+  border-radius:4px;
+  line-height:25px;
+  text-align:center;
+  color:#fff;
+  font-weight:600
+}
+.top-member-container .member .profile .information .rank.rank-1{
+  background-color:#8E24AA
+}
+.top-member-container .member .profile .information .rank.rank-2{
+  background-color:#00BCD4
+}
+.top-member-container .member .profile .information .rank.rank-3{
+  background-color:#FFC107
+}
+.top-member-container .member .profile .information .rank.rank-4{
+  background-color:#795548
+}
+.top-member-container .member .profile .information .rank.rank-5{
+  background-color:#757575
+}
+.top-member-container .member .profile .information .flex{
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:flex
+}
+.top-member-container .member .profile .information .name{
+  font-size:14px;
+  font-weight:600;
+  max-width:90px;
+  display:inline-block
+}
+.top-member-container .member .profile .information .level{
+  font-size:12px;
+  font-weight:500;
+  padding-left:5px;
+  display:inline-block
+}
+.top-member-container .member .profile .information .statistic{
+  font-size:12px;
+  color:#b6b6b6
+}
+.top-member-container .member .recipe{
+  position:relative;
+  max-width:100%;
+  max-height:300px;
+  overflow:hidden;
+  border-radius:8px;
+  margin-top:15px;
+  -webkit-transition:all ease-in-out .3s;
+  transition:all ease-in-out .3s
+}
+.top-member-container .member .recipe:hover{
+  opacity:.9
+}
+.top-member-container .member .recipe .overlay{
+  position:absolute;
+  height:100%;
+  width:100%;
+  top:0;
+  left:0;
+  opacity:.6;
+  z-index:1
+}
+.top-member-container .member .recipe .cover-image{
+  height:100%;
+  width:100%;
+  position:relative
+}
+.top-member-container .member .recipe .cover-image:before{
+  content:'';
+  display:block;
+  background-image:-webkit-gradient(linear,left bottom,left top,from(rgba(0,0,0,.79)),to(rgba(255,255,255,0)));
+  background-image:linear-gradient(to top,rgba(0,0,0,.79),rgba(255,255,255,0));
+  position:absolute;
+  top:0;
+  left:0;
+  height:100%;
+  width:100%
+}
+.top-member-container .member .recipe .cover-image img{
+  height:100%;
+  width:100%;
+  -o-object-fit:cover;
+  object-fit:cover;
+  -webkit-transition:all ease-in-out .3s;
+  transition:all ease-in-out .3s
+}
+.top-member-container .member .recipe .name{
+  position:absolute;
+  bottom:15px;
+  left:15px;
+  font-size:18px;
+  color:#fff;
+  text-transform:uppercase
+}
+.top-member-container .load-more{
+  height:45px;
+  text-align:center;
+  line-height:45px;
+  background-color:#e9ebee;
+  border-radius:8px;
+  border:1px solid #cecece;
+  -webkit-transition:all ease-in-out .3s;
+  transition:all ease-in-out .3s
+}
+.top-member-container .load-more:hover{
+  background-color:#f3f3f3
+}
