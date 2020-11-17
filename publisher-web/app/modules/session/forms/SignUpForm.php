@@ -20,11 +20,6 @@ class SignUpForm extends CsrfForm
             'required'=>true
         ]);
 
-        $username->addValidators([
-            new PresenceOf([
-                'message' => 'E-mail is required'
-            ])
-        ]);
 
         $this->add($username);
 

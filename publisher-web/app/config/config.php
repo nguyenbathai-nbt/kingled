@@ -11,11 +11,11 @@ return new \Phalcon\Config([
 
     'database' => [
         'adapter' => 'Postgresql',
-        'host' => 'blockchain.videabiz.com',
+        'host' => '3.139.175.155',
         'port' => 5432,
-        'username' => 'bc_publisher_admin',
+        'username' => 'kingleduse',
         'password' => 'Videa@2019',
-        'dbname'   => 'bc_publisher',
+        'dbname'   => 'kingleddb',
         'charset'  => 'utf8',
     ],
 

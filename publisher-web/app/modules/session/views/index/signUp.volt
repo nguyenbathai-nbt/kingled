@@ -20,10 +20,7 @@
                     {{ form.render('re_password') }}
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
-                <div class="form-group has-feedback">
-                    {{ form.render('email') }}
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
+
                 <div class="form-group has-feedback">
                     <div class="col-xs-4">
                     </div>

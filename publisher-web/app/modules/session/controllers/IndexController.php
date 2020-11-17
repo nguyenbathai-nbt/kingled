@@ -48,7 +48,7 @@ class IndexController extends ControllerBase
                 } else {
 
                     $check = $this->auth->check([
-                        'email' => trim($this->request->getPost('email')),
+                        'username' => trim($this->request->getPost('username')),
                         'password' => trim($this->request->getPost('password')),
                         'remember' => trim($this->request->getPost('remember'))
                     ]);
@@ -169,11 +169,8 @@ class IndexController extends ControllerBase
                 } else {
                     $form->bind($post, $user);
                     $user->setId($user->getSequenceId());
-                    $user->getUserKey(sha1($post['email']));
-                    $user->setEnableMfa(0);
-                    $user->setSecretMfa(' ');
-                    $user->setStatus('ACTIVE');
-                    $user->setRole('ISSUER');
+                    $user->setRoleId('1');
+                    $user->setStatusId('1');
                     $error_check_validitions = Users::checkValidations($post);
                     if (count($error_check_validitions) != 0) {
                         foreach ($error_check_validitions as $message) {
@@ -181,9 +178,6 @@ class IndexController extends ControllerBase
                         }
                         $form->setEntity($post);
                     } else {
-                        $token = openssl_random_pseudo_bytes(16);
-                        $token = bin2hex($token);
-                        $user->setUserKey($token);
                         if ($user->save()) {
                             $this->flashSession->success($this->helper->translate('Sign up success'));
                             return $this->redirect('/login');

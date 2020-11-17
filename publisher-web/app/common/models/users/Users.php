@@ -12,23 +12,16 @@ class Users extends Model
     protected $id_;
     protected $username;
     protected $password;
-    protected $email;
-    protected $created_date;
-    protected $modified_date;
-    protected $enable_mfa;
-    protected $secret_mfa;
-    protected $status_;
-    protected $last_passwd_update;
-    protected $last_login;
-    protected $last_fail_attempt;
-    protected $role_;
-    protected $user_key;
-    protected $subscriber_url;
+    protected $role_id;
+    protected $created_time;
+    protected $modified_time;
+    protected $status_id;
+
 
 
     public function getSource()
     {
-        return "user_";
+        return "user";
     }
 
     /**
@@ -40,11 +33,11 @@ class Users extends Model
     }
 
     /**
-     * @param mixed $id
+     * @param mixed $id_
      */
-    public function setId($id)
+    public function setId($id_)
     {
-        $this->id_ = $id;
+        $this->id_ = $id_;
     }
 
     /**
@@ -82,193 +75,65 @@ class Users extends Model
     /**
      * @return mixed
      */
-    public function getEmail()
+    public function getRoleId()
     {
-        return $this->email;
+        return $this->role_id;
     }
 
     /**
-     * @param mixed $email
+     * @param mixed $role_id
      */
-    public function setEmail($email)
+    public function setRoleId($role_id)
     {
-        $this->email = $email;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCreatedDate()
-    {
-        return $this->created_date;
-    }
-
-    /**
-     * @param mixed $created_date
-     */
-    public function setCreatedDate($created_date)
-    {
-        $this->created_date = $created_date;
+        $this->role_id = $role_id;
     }
 
     /**
      * @return mixed
      */
-    public function getModifiedDate()
+    public function getCreatedTime()
     {
-        return $this->modified_date;
+        return $this->created_time;
     }
 
     /**
-     * @param mixed $modified_date
+     * @param mixed $created_time
      */
-    public function setModifiedDate($modified_date)
+    public function setCreatedTime($created_time)
     {
-        $this->modified_date = $modified_date;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEnableMfa()
-    {
-        return $this->enable_mfa;
-    }
-
-    /**
-     * @param mixed $enable_mfa
-     */
-    public function setEnableMfa($enable_mfa)
-    {
-        $this->enable_mfa = $enable_mfa;
+        $this->created_time = $created_time;
     }
 
     /**
      * @return mixed
      */
-    public function getSecretMfa()
+    public function getModifiedTime()
     {
-        return $this->secret_mfa;
+        return $this->modified_time;
     }
 
     /**
-     * @param mixed $secret_mfa
+     * @param mixed $modified_time
      */
-    public function setSecretMfa($secret_mfa)
+    public function setModifiedTime($modified_time)
     {
-        $this->secret_mfa = $secret_mfa;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getStatus()
-    {
-        return $this->status_;
-    }
-
-    /**
-     * @param mixed $status
-     */
-    public function setStatus($status)
-    {
-        $this->status_ = $status;
+        $this->modified_time = $modified_time;
     }
 
     /**
      * @return mixed
      */
-    public function getLastPasswdUpdate()
+    public function getStatusId()
     {
-        return $this->last_passwd_update;
+        return $this->status_id;
     }
 
     /**
-     * @param mixed $last_passwd_update
+     * @param mixed $status_id
      */
-    public function setLastPasswdUpdate($last_passwd_update)
+    public function setStatusId($status_id)
     {
-        $this->last_passwd_update = $last_passwd_update;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLastLogin()
-    {
-        return $this->last_login;
-    }
-
-    /**
-     * @param mixed $last_login
-     */
-    public function setLastLogin($last_login)
-    {
-        $this->last_login = $last_login;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLastFailAttempt()
-    {
-        return $this->last_fail_attempt;
-    }
-
-    /**
-     * @param mixed $last_fail_attempt
-     */
-    public function setLastFailAttempt($last_fail_attempt)
-    {
-        $this->last_fail_attempt = $last_fail_attempt;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRole()
-    {
-        return $this->role_;
-    }
-
-    /**
-     * @param mixed $role
-     */
-    public function setRole($role_)
-    {
-        $this->role_ = $role_;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUserKey()
-    {
-        return $this->user_key;
-    }
-
-    /**
-     * @param mixed $user_key
-     */
-    public function setUserKey($user_key)
-    {
-        $this->user_key = $user_key;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSubscriberUrl()
-    {
-        return $this->subscriber_url;
-    }
-
-    /**
-     * @param mixed $subscriber_url
-     */
-    public function setSubscriberUrl($subscriber_url)
-    {
-        $this->subscriber_url = $subscriber_url;
+        $this->status_id = $status_id;
     }
 
 
@@ -291,15 +156,15 @@ class Users extends Model
         $this->password = $this->getDI()
             ->getSecurity()
             ->hash($this->password);
-        $this->modified_date = date('Y-m-d G:i:s');
-        $this->created_date = date('Y-m-d G:i:s');
+        $this->modified_time = date('Y-m-d G:i:s');
+        $this->created_time = date('Y-m-d G:i:s');
 
     }
 
     public function beforeValidationOnUpdate()
     {
-        $this->created_date = date('Y-m-d G:i:s');
-        $this->modified_date = date('Y-m-d G:i:s');
+        $this->created_time = date('Y-m-d G:i:s');
+        $this->modified_time = date('Y-m-d G:i:s');
     }
 
     public static function checkEmailExists($email)
@@ -319,12 +184,7 @@ class Users extends Model
 
     public static function checkValidations($post)
     {
-        $email = self::findFirst([
-            'conditions' => 'email=:email:',
-            'bind' => [
-                'email' => $post['email']
-            ]
-        ]);
+
         $username = self::findFirst([
             'conditions' => 'username=:username:',
             'bind' => [
@@ -333,9 +193,7 @@ class Users extends Model
         ]);
 
         $error = [];
-        if ($email) {
-            $error[] = 'The email is already registered';
-        }
+
         if ($username) {
             $error[] = 'The username is already registered';
         }

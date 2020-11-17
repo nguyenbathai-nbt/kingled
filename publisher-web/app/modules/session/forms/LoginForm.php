@@ -14,22 +14,13 @@ class LoginForm extends CsrfForm
     {
         parent::initialize();
         // Email
-        $email = new Text('email', [
-            'placeholder' => 'E-mail',
+        $username = new Text('username', [
+            'placeholder' => 'Username',
             'class' => 'form-control',
             'required'=>true
         ]);
 
-        $email->addValidators([
-            new PresenceOf([
-                'message' => 'E-mail is required'
-            ]),
-            new Email([
-                'message' => 'E-mail is not valid'
-            ])
-        ]);
-
-        $this->add($email);
+        $this->add($username);
 
         // Password
         $password = new Password('password', [

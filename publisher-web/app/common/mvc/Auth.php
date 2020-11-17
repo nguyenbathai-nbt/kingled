@@ -49,18 +49,18 @@ class Auth extends Component
 
         // Check if the user exist
         $user = Users::findFirst([
-            'conditions' => 'email=:email:  ',
+            'conditions' => 'username=:username:  ',
             'bind' => [
-                'email' => $credentials['email']
+                'username' => $credentials['username']
             ]
         ]);
         if ($user == false) {
-            return 'Wrong email/password. Please try again';
+            return 'Wrong username/password. Please try again';
         }
 
         // Check the password
         if (!$this->security->checkHash($credentials['password'], $user->password)) {
-            return 'Wrong email/password. Please try again';
+            return 'Wrong username/password. Please try again';
         }
 
         // Check if the user was flagged
@@ -77,9 +77,7 @@ class Auth extends Component
         $this->session->set('auth-identity', [
             'id' => $user->getId(),
             'full_name' => $user->getUsername(),
-            'role' => $user->getRole(),
-            'user_key' => $user->getUserKey(),
-            'email' => $user->getEmail()
+            'role' => $user->getRoleId(),
         ]);
         return 'true';
     }

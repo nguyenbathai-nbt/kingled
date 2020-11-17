@@ -9,7 +9,7 @@
             {{ this.flashSession.output() }}
             <form action="/login" method="post">
                 <div class="form-group has-feedback">
-                    {{ form.render('email') }}
+                    {{ form.render('username') }}
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
                 <div class="form-group has-feedback">
