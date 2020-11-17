@@ -7,30 +7,24 @@ namespace Publisher\Common\Models\Users;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 
-class Users extends Model
+class Product extends Model
 {
     protected $id;
-    protected $username;
-    protected $password;
-    protected $role_id;
+    protected $name;
+    protected $code;
+    protected $description;
     protected $created_time;
     protected $modified_time;
-    protected $status_id;
 
 
 
     public function getSource()
     {
-        return "user";
+        return "product";
     }
     public function initialize()
     {
-        $this->hasOne('role_id', 'Publisher\Common\Models\Users\Role', 'id', [
-            'alias' => 'role'
-        ]);
-        $this->hasOne('status_id', 'Publisher\Common\Models\Users\Status', 'id', [
-            'alias' => 'status'
-        ]);
+
     }
 
     /**
@@ -52,49 +46,49 @@ class Users extends Model
     /**
      * @return mixed
      */
-    public function getUsername()
+    public function getName()
     {
-        return $this->username;
+        return $this->name;
     }
 
     /**
-     * @param mixed $username
+     * @param mixed $name
      */
-    public function setUsername($username)
+    public function setName($name)
     {
-        $this->username = $username;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param mixed $password
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
+        $this->name = $name;
     }
 
     /**
      * @return mixed
      */
-    public function getRoleId()
+    public function getCode()
     {
-        return $this->role_id;
+        return $this->code;
     }
 
     /**
-     * @param mixed $role_id
+     * @param mixed $code
      */
-    public function setRoleId($role_id)
+    public function setCode($code)
     {
-        $this->role_id = $role_id;
+        $this->code = $code;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
     }
 
     /**
@@ -129,27 +123,13 @@ class Users extends Model
         $this->modified_time = $modified_time;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStatusId()
-    {
-        return $this->status_id;
-    }
 
-    /**
-     * @param mixed $status_id
-     */
-    public function setStatusId($status_id)
-    {
-        $this->status_id = $status_id;
-    }
 
 
     public function getSequenceId()
     {
         $connection = $this->getDI()->getShared("db");
-        $rs = $connection->query("select nextval('public.user_id_seq');");
+        $rs = $connection->query("select nextval('public.product_id_seq');");
         $sid = $rs->fetchAll();
         return $sid[0][0];
     }

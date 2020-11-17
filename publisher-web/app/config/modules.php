@@ -7,15 +7,14 @@ $modules_web = [
     'dashboard',
     'session',
     'cli',
-    'group',
-    'issuer',
-    'api'
+    'user',
+    'bill',
+    'api',
 ];
 $default_module = 'session';
 
 $additional_namespaces = [
     'Publisher\Common\Models' => APP_PATH . '/common/models/',
-    'Publisher\Common\Models\Group' => APP_PATH . '/common/models/group',
     'Publisher\Common\Models\Users' => APP_PATH . '/common/models/users',
     'Publisher\Common\Models\Badge' => APP_PATH . '/common/models/badge',
     'Publisher\Common\Mvc' => APP_PATH . '/common/mvc/',

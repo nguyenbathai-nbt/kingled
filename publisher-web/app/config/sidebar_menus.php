@@ -12,22 +12,22 @@ return new \Phalcon\Config([
 //    ],
     'headerbadgechain' => [
         'cssClass' => 'header',
-        'text' => 'MANAGER GROUP'
+        'text' => 'MANAGER USER'
     ],
     'bc' => [
         'active' => true,
         'iconCss' => 'fa fa-id-badge',
-        'text' => 'Group managers',
+        'text' => 'User managers',
         'children' => [
-            'group_list' => [
+            'user_list' => [
                 'iconCss' => 'fa fa-clone',
-                'text' => 'List group',
-                'href' => '/group'
+                'text' => 'List user',
+                'href' => '/user'
             ],
-            'group_create' => [
+            'user_create' => [
                 'iconCss' => 'fa fa-folder-o',
-                'text' => 'Create group',
-                'href' => '/group/create'
+                'text' => 'Create user',
+                'href' => '/user/create'
             ],
         ]
     ],
@@ -59,18 +59,24 @@ return new \Phalcon\Config([
         'cssClass' => 'header',
         'text' => 'MY API KEY'
     ],
-    'ak' => [
+    'bill' => [
         'active' => true,
-        'iconCss' => 'fa fa-key',
-        'text' => 'Api key',
-        'href' => '/issuer/apiKey'
+        'iconCss' => 'fa fa-id-badge',
+        'text' => 'Bill managers',
+        'children' => [
+            'bill_list' => [
+                'iconCss' => 'fa fa-clone',
+                'text' => 'List bill',
+                'href' => '/bill'
+            ],
+            'bill_create' => [
+                'iconCss' => 'fa fa-folder-o',
+                'text' => 'Create bill',
+                'href' => '/bill/create'
+            ],
+        ]
     ],
-    'ws' => [
-        'active' => true,
-        'iconCss' => 'fa fa-key',
-        'text' => 'Web Subscriber',
-        'href' => '/issuer/webSubscriber'
-    ],
+
 
 
 ]);

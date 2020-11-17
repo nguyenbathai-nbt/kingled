@@ -12,7 +12,7 @@ use Phalcon\Mvc\Controller;
 use Publisher\Common\Models\Badge\Badge;
 use Publisher\Common\Models\Badge\BadgeInfo;
 use Publisher\Common\Models\Group\Group;
-use Publisher\Common\Models\Users\Users;
+use Publisher\Common\Models\Users\Product;
 
 /**
  * Class RestController.
@@ -33,7 +33,7 @@ class RestController extends Controller
     protected function getListGroup()
     {
         $header = apache_request_headers();
-        $user = Users::findFirst([
+        $user = Product::findFirst([
             'conditions' => 'user_key=:user_key:',
             'bind' => [
                 'user_key' => $header['apikey']
@@ -72,7 +72,7 @@ class RestController extends Controller
         $format = $this->request->getQuery('format', null, 'json');
         $header = apache_request_headers();
         if (isset($header['apikey'])) {
-            $user = Users::findFirst([
+            $user = Product::findFirst([
                 'conditions' => 'user_key=:user_key:',
                 'bind' => [
                     'user_key' => $header['apikey']

@@ -3,7 +3,7 @@
 namespace Publisher\Common\Mvc;
 
 use Phalcon\Mvc\User\Component;
-use Publisher\Common\Models\Users\Users;
+use Publisher\Common\Models\Users\Product;
 
 class Auth extends Component
 {
@@ -48,7 +48,7 @@ class Auth extends Component
     {
 
         // Check if the user exist
-        $user = Users::findFirst([
+        $user = Product::findFirst([
             'conditions' => 'username=:username:  ',
             'bind' => [
                 'username' => $credentials['username']
