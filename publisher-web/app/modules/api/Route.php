@@ -9,34 +9,29 @@ $namespace = 'Publisher\Modules\Api\Controllers';
 
 $router->add('/'.$key.'/:params', [
     'namespace' => $namespace,
-    'module' => $key,
+    'module' => $module,
     'controller' => $key,
     'action' => 'index',
     'params' => 1
 ])->setName($key);
-$router->add('/'.$key.'/:controller/:params', [
+$router->add('/'.$key.'/:params', [
     'namespace' => $namespace,
-    'module' => $key,
-    'controller' => 'badge',
+    'module' => $module,
+    'controller' => $key,
     'action' => 'index',
-    'params' => 2
-]);
-$router->add('/'.$key.'/:controller/:action', [
-    'namespace' => $namespace,
-    'module' => $key,
-    'controller' => 1,
-    'action' => 2
+    'params' => 1
 ]);
 $router->add('/'.$key.'/:action', [
     'namespace' => $namespace,
-    'module' => $key,
+    'module' => $module,
     'controller' => $key,
     'action' => 1
 ]);
-$router->add('/'.$key.'/:controller/:action/:params', [
+
+$router->add('/'.$key.'/:action/:params', [
     'namespace' => $namespace,
-    'module' => $key,
-    'controller' => 1,
-    'action' => 2,
-    'params' => 3
+    'module' => $module,
+    'controller' => $key,
+    'action' => 1,
+    'params' => 2
 ]);

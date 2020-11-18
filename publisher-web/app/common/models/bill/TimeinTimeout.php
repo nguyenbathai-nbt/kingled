@@ -14,9 +14,9 @@ class TimeinTimeout extends Model
     protected $product_id;
     protected $quantity;
     protected $time_in;
-    protected $user_time_in;
+    protected $user_timein_id;
     protected $time_out;
-    protected $user_time_out;
+    protected $user_timeout_id;
     protected $major_id;
     protected $delay_status;
     protected $count_time;
@@ -135,9 +135,9 @@ class TimeinTimeout extends Model
     /**
      * @param mixed $user_time_in
      */
-    public function setUserTimeIn($user_time_in)
+    public function setUserTimeInId($user_timein_id)
     {
-        $this->user_time_in = $user_time_in;
+        $this->user_timein_id = $user_timein_id;
     }
 
     /**
@@ -153,7 +153,7 @@ class TimeinTimeout extends Model
      */
     public function setTimeOut($time_out)
     {
-        $this->time_out = $time_out;
+        $this->time_out= $time_out;
     }
 
     /**
@@ -167,9 +167,9 @@ class TimeinTimeout extends Model
     /**
      * @param mixed $user_time_out
      */
-    public function setUserTimeOut($user_time_out)
+    public function setUserTimeOutId($user_timeout_id)
     {
-        $this->user_time_out = $user_time_out;
+        $this->user_timeout_id = $user_timeout_id;
     }
 
     /**
