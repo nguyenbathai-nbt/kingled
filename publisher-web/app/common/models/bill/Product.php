@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Publisher\Common\Models\Users;
+namespace Publisher\Common\Models\Bill;
 
 
 use Phalcon\Di;
@@ -136,10 +136,6 @@ class Product extends Model
 
     public function beforeValidationOnCreate()
     {
-
-        $this->password = $this->getDI()
-            ->getSecurity()
-            ->hash($this->password);
         $this->modified_time = date('Y-m-d G:i:s');
         $this->created_time = date('Y-m-d G:i:s');
 
@@ -147,7 +143,6 @@ class Product extends Model
 
     public function beforeValidationOnUpdate()
     {
-        $this->created_time = date('Y-m-d G:i:s');
         $this->modified_time = date('Y-m-d G:i:s');
     }
 

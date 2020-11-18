@@ -167,7 +167,6 @@ class Users extends Model
 
     public function beforeValidationOnUpdate()
     {
-        $this->created_time = date('Y-m-d G:i:s');
         $this->modified_time = date('Y-m-d G:i:s');
     }
 

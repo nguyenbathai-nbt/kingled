@@ -10,13 +10,14 @@ $modules_web = [
     'user',
     'bill',
     'api',
+    'product'
 ];
 $default_module = 'session';
 
 $additional_namespaces = [
     'Publisher\Common\Models' => APP_PATH . '/common/models/',
     'Publisher\Common\Models\Users' => APP_PATH . '/common/models/users',
-    'Publisher\Common\Models\Badge' => APP_PATH . '/common/models/badge',
+    'Publisher\Common\Models\Bill' => APP_PATH . '/common/models/bill',
     'Publisher\Common\Mvc' => APP_PATH . '/common/mvc/',
     'Publisher\Common\Mvc\Form' => APP_PATH . '/common/mvc/form/',
     'Publisher\Common\Mvc\Helper' => APP_PATH . '/common/mvc/helper/',

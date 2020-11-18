@@ -6,7 +6,7 @@ namespace Publisher\Modules\Group\Forms;
 
 use Publisher\Common\Mvc\Form\Form;
 
-class GroupForm extends Form
+class UserForm extends Form
 {
     public function initialize()
     {

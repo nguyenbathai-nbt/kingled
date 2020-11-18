@@ -1,14 +1,14 @@
 <?php
 
-namespace Publisher\Modules\User\Controllers;
+namespace Publisher\Modules\Product\Controllers;
 
 use Publisher\Common\Models\Badge\Badge;
 use Publisher\Common\Models\Badge\BadgeTemplate;
-use Publisher\Common\Models\Users\Product;
+use Publisher\Common\Models\Bill\Product;
 use Publisher\Common\Models\Users\Users;
 use Publisher\Common\Mvc\DashboardControllerBase;
 
-class UserController extends DashboardControllerBase
+class ProductController extends DashboardControllerBase
 {
     private $limit_of_page = 10;
 
@@ -17,8 +17,8 @@ class UserController extends DashboardControllerBase
         parent::initialize();
         $this->view->names = [
             [
-                'label' => 'User',
-                'href' => '/user'
+                'label' => 'Product',
+                'href' => '/product'
             ],
         ];
         $this->view->activemenu = [
@@ -35,16 +35,16 @@ class UserController extends DashboardControllerBase
             'bc',
             'user_list'
         ];
-        $list_user = Users::find();
+        $list_product = Product::find();
         $count_recipient = [];
-        $total_list_user = Users::count();
-        if (count($list_user) == 0) {
-            $this->view->users = null;
+        $total_list_product = Product::count();
+        if (count($list_product) == 0) {
+            $this->view->products = null;
         } else {
-            $this->view->users = $list_user;
+            $this->view->products = $list_product;
             $this->view->count_recipient = $count_recipient;
         }
-        $this->view->paging = $this->helper->util()->paging($total_list_user, $this->request->getQuery(), $this->limit_of_page, $current_page);
+        $this->view->paging = $this->helper->util()->paging($total_list_product, $this->request->getQuery(), $this->limit_of_page, $current_page);
 
 
     }
@@ -129,23 +129,22 @@ class UserController extends DashboardControllerBase
 
     public function deleteAction($id)
     {
-        $is3=$id1;
         $this->view->disable();
-        $user = Users::findFirst([
+        $product = Product::findFirst([
             'conditions' => 'id=:id:',
             'bind' => [
                 'id' => $id
             ]
         ]);
-        if ($user) {
-            $user->setStatusId('2');
-            $user->update();
+        if ($product) {
+            $product->setStatusId('2');
+            $product->update();
 
             $this->flashSession->success($this->helper->translate('Delete success'));
         } else {
-            $this->flashSession->warning($this->helper->translate('Not found user'));
+            $this->flashSession->warning($this->helper->translate('Not found product'));
         }
-        return $this->redirect('/user');
+        return $this->redirect('/product');
 
     }
 

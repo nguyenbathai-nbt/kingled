@@ -336,9 +336,7 @@ abstract class Form extends \Phalcon\Forms\Form
 
                 } else {
                     $attributes['useEmpty'] = true;
-
-
-                    $attributes['emptyText'] = $this->helper->translate('Select') . ' ' . $label_explode;
+                    $attributes['emptyText'] = $this->helper->translate('Chọn') . ' ' . $label_explode;
                 }
                 $element = (new Select($name, $value, $attributes))->setLabel($label);
                 break;

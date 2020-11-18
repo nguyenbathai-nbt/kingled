@@ -7,9 +7,20 @@
         <div class="box-body">
             <div class="row">
                 <div class="col-md-6">
-                    {{ form.renderDecorated('username') }}
-                    {{ form.renderDecorated('password') }}
-                    {{ form.renderDecorated('email') }}
+                    {{ form.renderDecorated('name') }}
+                    {{ form.renderDecorated('code') }}
+                    {{ form.renderDecorated('quantity') }}
+                    {{ form.renderDecorated('product_id') }}
+
+
+
+                </div>
+
+                <div class="col-md-6">
+                    {{ form.renderDecorated('status_id') }}
+                    {{ form.renderDecorated('priority') }}
+                    {{ form.renderDecorated('description') }}
+                    {{ form.renderDecorated('note') }}
                 </div>
             </div>
         </div>

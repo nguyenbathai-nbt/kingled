@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Publisher\Common\Models\Users;
+namespace Publisher\Common\Models\Bill;
 
 
 use Phalcon\Di;
@@ -33,13 +33,13 @@ class TimeinTimeout extends Model
     }
     public function initialize()
     {
-        $this->hasOne('bill_id', 'Daudau\Common\Models\Bill\Bill', 'id', [
+        $this->hasOne('bill_id', 'Publisher\Common\Models\Bill\Bill', 'id', [
             'alias' => 'bill'
         ]);
-        $this->hasOne('product_id', 'Daudau\Common\Models\Bill\Product', 'id', [
+        $this->hasOne('product_id', 'Publisher\Common\Models\Bill\Product', 'id', [
             'alias' => 'product'
         ]);
-        $this->hasOne('major_id', 'Daudau\Common\Models\Bill\Major', 'id', [
+        $this->hasOne('major_id', 'Publisher\Common\Models\Bill\Major', 'id', [
             'alias' => 'major'
         ]);
     }
@@ -298,10 +298,6 @@ class TimeinTimeout extends Model
 
     public function beforeValidationOnCreate()
     {
-
-        $this->password = $this->getDI()
-            ->getSecurity()
-            ->hash($this->password);
         $this->modified_time = date('Y-m-d G:i:s');
         $this->created_time = date('Y-m-d G:i:s');
 
@@ -309,61 +305,7 @@ class TimeinTimeout extends Model
 
     public function beforeValidationOnUpdate()
     {
-        $this->created_time = date('Y-m-d G:i:s');
         $this->modified_time = date('Y-m-d G:i:s');
     }
 
-    public static function checkEmailExists($email)
-    {
-        $user = Product::findFirst([
-            'conditions' => 'email=:email:',
-            'bind' => [
-                'email' => $email
-            ]
-        ]);
-        if ($user) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static function checkValidations($post)
-    {
-
-        $username = self::findFirst([
-            'conditions' => 'username=:username:',
-            'bind' => [
-                'username' => $post['username']
-            ]
-        ]);
-
-        $error = [];
-
-        if ($username) {
-            $error[] = 'The username is already registered';
-        }
-
-        return $error;
-
-    }
-
-    public static function changePassword($id, $password)
-    {
-        $user = self::findFirst([
-            'conditions' => 'id_=:id_:',
-            'bind' => [
-                'id_' => $id
-            ]
-        ]);
-        if ($user) {
-            $user->setPassword(Di::getDefault()->getSecurity()->hash($password));
-            if ($user->save()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
 }

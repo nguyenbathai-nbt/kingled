@@ -11,8 +11,8 @@ namespace Publisher\Modules\Api\Controllers;
 use Phalcon\Mvc\Controller;
 use Publisher\Common\Models\Badge\Badge;
 use Publisher\Common\Models\Badge\BadgeInfo;
+use Publisher\Common\Models\Bill\Product;
 use Publisher\Common\Models\Group\Group;
-use Publisher\Common\Models\Users\Product;
 
 /**
  * Class RestController.
@@ -33,28 +33,28 @@ class RestController extends Controller
     protected function getListGroup()
     {
         $header = apache_request_headers();
-        $user = Product::findFirst([
-            'conditions' => 'user_key=:user_key:',
-            'bind' => [
-                'user_key' => $header['apikey']
-            ]
-        ]);
+//        $user = Product::findFirst([
+//            'conditions' => 'user_key=:user_key:',
+//            'bind' => [
+//                'user_key' => $header['apikey']
+//            ]
+//        ]);
         $format = $this->request->getQuery('format', null, 'json');
-        $list_group = Group::find([
-            'conditions' => 'owner_id=:owner_id:',
-            'bind' => [
-                'owner_id' => $user->getId()
-            ],
-            'order' => 'group_code ASC'
-        ]);
-        $list_group = [
-            "groups" => $list_group
-        ];
+//        $list_group = Group::find([
+//            'conditions' => 'owner_id=:owner_id:',
+//            'bind' => [
+//                'owner_id' => $user->getId()
+//            ],
+//            'order' => 'group_code ASC'
+//        ]);
+//        $list_group = [
+//            "groups" => $list_group
+//        ];
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
-                $content = json_encode($list_group);
+                $content = json_encode($header);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(

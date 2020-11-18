@@ -43,22 +43,19 @@ return new \Phalcon\Config([
         'children' => [
             'issuer_list' => [
                 'iconCss' => 'fa fa-clone   ',
-                'text' => 'List issuer',
-                'href' => '/issuer'
+                'text' => 'List bill',
+                'href' => '/bill'
             ],
             'issuer_create' => [
                 'iconCss' => 'fa fa-users',
-                'text' => 'Create issuer',
-                'href' => '/issuer/create'
+                'text' => 'Create bill',
+                'href' => '/bill/create'
             ],
 
         ],
         'role' => 'ADMIN'
     ],
-    'headermyapikey' => [
-        'cssClass' => 'header',
-        'text' => 'MY API KEY'
-    ],
+
     'bill' => [
         'active' => true,
         'iconCss' => 'fa fa-id-badge',
@@ -73,6 +70,23 @@ return new \Phalcon\Config([
                 'iconCss' => 'fa fa-folder-o',
                 'text' => 'Create bill',
                 'href' => '/bill/create'
+            ],
+        ]
+    ],
+    'product' => [
+        'active' => true,
+        'iconCss' => 'fa fa-id-badge',
+        'text' => 'Product managers',
+        'children' => [
+            'product' => [
+                'iconCss' => 'fa fa-clone',
+                'text' => 'List product',
+                'href' => '/product'
+            ],
+            'product_create' => [
+                'iconCss' => 'fa fa-folder-o',
+                'text' => 'Create product',
+                'href' => '/product/create'
             ],
         ]
     ],

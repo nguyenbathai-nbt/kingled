@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Publisher\Common\Models\Users;
+namespace Publisher\Common\Models\Bill;
 
 
 use Phalcon\Di;
@@ -29,7 +29,7 @@ class BillDetail extends Model
     }
     public function initialize()
     {
-        $this->hasOne('bill_id', 'Daudau\Common\Models\Bill\Bill', 'id', [
+        $this->hasOne('bill_id', 'Publisher\Common\Models\Bill\Bill', 'id', [
             'alias' => 'bill'
         ]);
     }
@@ -212,7 +212,6 @@ class BillDetail extends Model
 
     public function beforeValidationOnUpdate()
     {
-        $this->created_time = date('Y-m-d G:i:s');
         $this->modified_time = date('Y-m-d G:i:s');
     }
 
