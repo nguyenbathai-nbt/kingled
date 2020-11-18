@@ -129,7 +129,6 @@ class UserController extends DashboardControllerBase
 
     public function deleteAction($id)
     {
-        $is3=$id1;
         $this->view->disable();
         $user = Users::findFirst([
             'conditions' => 'id=:id:',

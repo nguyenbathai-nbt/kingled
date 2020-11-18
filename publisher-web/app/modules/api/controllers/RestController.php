@@ -9,10 +9,15 @@
 namespace Publisher\Modules\Api\Controllers;
 
 use Phalcon\Mvc\Controller;
-use Publisher\Common\Models\Badge\Badge;
-use Publisher\Common\Models\Badge\BadgeInfo;
+use Publisher\Common\Models\Bill\Bill;
+use Publisher\Common\Models\Bill\BillDetail;
 use Publisher\Common\Models\Bill\Product;
-use Publisher\Common\Models\Group\Group;
+use Publisher\Common\Models\Bill\TimeinTimeout;
+use Publisher\Common\Models\Users\Major;
+use Publisher\Common\Models\Users\Role;
+use Publisher\Common\Models\Users\Status;
+use Publisher\Modules\Bill\Forms\BillForm;
+
 
 /**
  * Class RestController.
@@ -67,25 +72,6 @@ class RestController extends Controller
         return $this->response->send();
     }
 
-    protected function checkApiKey()
-    {
-        $format = $this->request->getQuery('format', null, 'json');
-        $header = apache_request_headers();
-        if (isset($header['apikey'])) {
-            $user = Product::findFirst([
-                'conditions' => 'user_key=:user_key:',
-                'bind' => [
-                    'user_key' => $header['apikey']
-                ]
-            ]);
-            if ($user) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
     protected function renderLog($content)
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -106,44 +92,15 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
-
-    protected function getRecipientBadge($group_id)
+    protected function getAllStatus()
     {
         $format = $this->request->getQuery('format', null, 'json');
-        // $group_id = file_get_contents('php://input');
-        $list_badge = Badge::find([
-            'conditions' => 'group_id=:group_id:',
-            'bind' => [
-                'group_id' => $group_id
-            ]
-        ]);
-        $list = [];
-        foreach ($list_badge as $lst_badge) {
-            $recipient_by_badge_id = BadgeInfo::findFirst([
-                'conditions' => 'id_=:id_:',
-                'bind' => [
-                    'id_' => $lst_badge->getId()
-                ]
-            ]);
-            if ($recipient_by_badge_id) {
-                $list[] = [
-                    'id' => $recipient_by_badge_id->getId(),
-                    'email' => $recipient_by_badge_id->getRecipientId(),
-                    'name' => $recipient_by_badge_id->getRecipientName(),
-                    'assertion_id' => $recipient_by_badge_id->getAssertionId(),
-                    'issued_date' => $recipient_by_badge_id->getIssuedDate(),
-                ];
-            }
-        }
-        $list = [
-            'recipients' => $list
-        ];
-
+        $list_status = Status::find();
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
-                $content = json_encode($list);
+                $content = json_encode($list_status);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
@@ -155,24 +112,234 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
-
-    protected function getGroupById($id)
+    protected function getAllBill()
     {
         $format = $this->request->getQuery('format', null, 'json');
-        $list_group = Group::findFirst([
-            'conditions' => 'id_=:id_:',
-            'bind' => [
-                'id_' => $id
-            ]
-        ]);
-        $list_group = [
-            "group" => $list_group
-        ];
+        $list_bill = Bill::find();
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
-                $content = json_encode($list_group);
+                $content = json_encode($list_bill);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+    protected function getBillDetailByBillId($bill_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $list_bill_detail = BillDetail::findFirst([
+            'conditions'=>'bill_id=:bill_id:',
+            'bind'=>[
+                'bill_id'=> $bill_id
+            ]
+        ]);
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($list_bill_detail);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+    protected function getTimeInTimeOutByBillId($bill_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $list_bill_detail = TimeinTimeout::find([
+            'conditions'=>'bill_id=:bill_id:',
+            'bind'=>[
+                'bill_id'=> $bill_id
+            ]
+        ]);
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($list_bill_detail);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+    protected function getAllProduct()
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $list_product = Product::find();
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($list_product);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+    protected function getAllRole()
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $list_role = Role::find();
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($list_role);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+    protected function getAllMajor()
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $list_major = Major::find();
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($list_major);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+    protected function createBill($post)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $bill = new Bill();
+        $bill->setName($post['name']);
+        $bill->setCode($post['code']);
+        $bill->setStatusId($post['status_id']);
+        $bill->setPriority($post['priority']);
+        $this->db->begin();
+        if($bill->save())
+        {
+            $bill_detail= new BillDetail();
+            $bill_detail->setBillId($bill->getId());
+            $bill_detail->setProductId($post['product_id']);
+            $bill_detail->setQuantity($post['quantity']);
+            $bill_detail->setDescription($post['description']);
+            $bill_detail->setNote($post['note']);
+            if($bill_detail->save())
+            {
+                $parent_id=null;
+                for ($i=1;$i<=5;$i++)
+                {
+                    $timein_timeout= new TimeinTimeout();
+                    $timein_timeout->setBillId($bill->getId());
+                    $timein_timeout->setProductId($bill_detail->getProductId());
+                    $timein_timeout->setQuantity($bill_detail->getQuantity());
+                    $timein_timeout->setMajorId($i);
+                    $timein_timeout->setParentId($parent_id);
+                    $timein_timeout->save();
+                    $parent_id= $timein_timeout->getId();
+                }
+            }
+            $this->db->commit();
+            switch ($format) {
+                case 'json':
+                    $contentType = 'application/json';
+                    $encoding = 'UTF-8';
+                    $content = json_encode($bill);
+                    break;
+                default:
+                    throw new \Api\Exception\NotImplementedException(
+                        sprintf('Requested format %s is not supported yet.', $format)
+                    );
+                    break;
+            }
+            $this->response->setContentType($contentType, $encoding);
+            $this->response->setContent($content);
+            return $this->response->send();
+
+        }else{
+
+        }
+    }
+    protected function updateTimeIn($user_id,$timeintimeout_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $timeintimeout = TimeinTimeout::findFirst([
+            'conditions'=>'id=:id:',
+            'bind'=>[
+                'id'=> $timeintimeout_id
+            ]
+        ]);
+        $timeintimeout->setTimeIn(date('Y-m-d G:i:s'));
+        $timeintimeout->setUserTimeInId($user_id);
+        $timeintimeout->save();
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($timeintimeout);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+    protected function updateTimeOut($user_id,$timeintimeout_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $timeintimeout = TimeinTimeout::findFirst([
+            'conditions'=>'id=:id:',
+            'bind'=>[
+                'id'=> $timeintimeout_id
+            ]
+        ]);
+        $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
+        $timeintimeout->setUserTimeOutId($user_id);
+        $timeintimeout->save();
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($timeintimeout);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
