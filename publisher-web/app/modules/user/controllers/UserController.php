@@ -2,11 +2,11 @@
 
 namespace Publisher\Modules\User\Controllers;
 
-use Publisher\Common\Models\Badge\Badge;
-use Publisher\Common\Models\Badge\BadgeTemplate;
+
 use Publisher\Common\Models\Users\Product;
 use Publisher\Common\Models\Users\Users;
 use Publisher\Common\Mvc\DashboardControllerBase;
+use Publisher\Modules\User\Forms\UserForm;
 
 class UserController extends DashboardControllerBase
 {
@@ -53,75 +53,42 @@ class UserController extends DashboardControllerBase
     {
         $this->view->activemenu = [
             'bc',
-            'group_create'
+            'user_create'
         ];
         $this->view->names = [
             [
-                'label' => 'Create Group',
-                'href' => '/group/create'
+                'label' => 'Tạo mới người dùng',
+                'href' => '/user/create'
             ]
 
         ];
-        $form = new GroupForm();
-        $form->creategroup();
+        $form = new UserForm();
+        $form->createuser();
 
-        $group = new Group();
-        $badge_template = new BadgeTemplate();
+        $user = new Users();
         $auth = $this->session->get('auth-identity');
-        $this->db->begin();
         if ($this->request->isPost()) {
             $post = $this->request->getPost();
-            $form->setEntity($post);
-            $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $image_type = $finfo->file($_FILES['import']['tmp_name']);
-            if (($image_type == "image/png" || $image_type == "image/svg+xml" || $image_type == "image/svg")) {
-                if ($_FILES['import']['size'] <= 20480) {
-                    move_uploaded_file($_FILES['import']['tmp_name'], BASE_PATH . "/data/upload-image/" . $_FILES['import']['name']);
-                    $form->bind($post, $group);
-                    $group->setId($group->getSequenceId());
-                    $group->setOwnerId($auth['id']);
-                    $group->setGroupEmail($auth['email']);
-                    $group->setGroupUrl($group->getDefaultUrl() . '_' . $group->getId());
-                    $group->setApiKey(' ');
-                    $group->setStatus('GR_ACTIVE');
-                    if (!$group->save()) {
-                        foreach ($group->getMessages() as $message) {
-                            $this->flashSession->error($this->helper->translate($message->getMessage()));
-                        }
-                        $form->setEntity($group);
-                    } else {
-                        $badge_template = new BadgeTemplate();
-                        $badge_template->setId($badge_template->getSequenceId());
-                        $badge_template->setGroupId($group->getId());
-                        $badge_template->setStatus('ACTIVE');
-
-                        $image_base = base64_encode(file_get_contents(BASE_PATH . "/data/upload-image/" . $_FILES['import']['name']));
-                        $badge_template->setImage($image_base);
-                        $badge_template->setImageType($image_type);
-                        if ($badge_template->save()) {
-                            $this->db->commit();
-                            return $this->redirect('/group');
-                        } else {
-                            $this->flashSession->error($this->helper->translate('Badgetemplate'));
-                            foreach ($badge_template->getMessages() as $message) {
-                                $this->flashSession->error($this->helper->translate($message->getMessage()));
-                            }
-
-
-                            $form->setEntity($group);
-                        }
-
-                    }
-                } else {
-                    $this->flashSession->error("Imported file has a file size in excess of 20Kb");
-                   // return $this->redirect('/group/create');
+            $form->bind($post,$user);
+            $user->setPassword('Kingled@2020');
+            $error_check_validitions = Users::checkValidations($post);
+            if (count($error_check_validitions) != 0) {
+                foreach ($error_check_validitions as $message) {
+                    $this->flashSession->error($this->helper->translate($message));
                 }
-
+                $form->setEntity($post);
             } else {
-                $this->flashSession->error("The import file is not in the correct format .png and .svg");
-               // return $this->redirect('/group/create');
-            }
+                if ($user->create()) {
+                    $this->flashSession->success($this->helper->translate('Tạo tài khoản thành công'));
+                    return $this->redirect('/user');
+                } else {
+                    foreach ($user->getMessages() as $message) {
+                        $this->flashSession->error($this->helper->translate($message->getMessage()));
+                    }
+                    $form->setEntity($post);
 
+                }
+            }
         }
         $this->view->form = $form;
 
