@@ -32,6 +32,9 @@ class BillDetail extends Model
         $this->hasOne('bill_id', 'Publisher\Common\Models\Bill\Bill', 'id', [
             'alias' => 'bill'
         ]);
+        $this->hasOne('product_id', 'Publisher\Common\Models\Bill\Product', 'id', [
+            'alias' => 'product'
+        ]);
     }
 
     /**

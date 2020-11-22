@@ -3,14 +3,12 @@
 namespace Publisher\Modules\Bill\Controllers;
 
 use Phalcon\Tag;
-use Publisher\Common\Models\Badge\BadgeTemplate;
 use Publisher\Common\Models\Bill\Bill;
 use Publisher\Common\Models\Bill\BillDetail;
-use Publisher\Common\Models\Bill\Product;
 use Publisher\Common\Models\Bill\TimeinTimeout;
 use Publisher\Common\Mvc\DashboardControllerBase;
-use Publisher\Modules\Bill\Forms\IssuedForm;
 use Publisher\Modules\Bill\Forms\BillForm;
+use Publisher\Modules\Bill\Forms\IssuedForm;
 
 
 class BillController extends DashboardControllerBase
@@ -20,7 +18,7 @@ class BillController extends DashboardControllerBase
         parent::initialize();
         $this->view->names = [
             [
-                'label' => 'Issuer',
+                'label' => 'Hóa đơn',
                 'href' => '/bill'
             ],
         ];
@@ -29,20 +27,20 @@ class BillController extends DashboardControllerBase
     public function indexAction()
     {
         $this->view->activemenu = [
-            'is',
-            'issuer_list'
+            'bill',
+            'bill_list'
         ];
         $this->view->issued = null;
         $auth = $this->session->get('auth-identity');
         $current_page = $this->request->getQuery('page', 'int', 1);
         $limit_of_page = 10;
-        $list_bill = Bill::find([
+        $list_bill = BillDetail::find([
             'limit' => $this->limit_of_page,
             'offset' => (($current_page - 1) * $limit_of_page),
             'order' => 'id ASC'
         ]);
 
-        $total_list_bill = Bill::count([
+        $total_list_bill = BillDetail::count([
 
         ]);
         if (count($list_bill) == 0) {
@@ -70,35 +68,32 @@ class BillController extends DashboardControllerBase
 
             $form->bind($post, $bill);
             $this->db->begin();
-            if($bill->save())
-            {
-                $bill_detail= new BillDetail();
-                $form->bind($post,$bill_detail);
+            if ($bill->save()) {
+                $bill_detail = new BillDetail();
+                $form->bind($post, $bill_detail);
                 $bill_detail->setBillId($bill->getId());
-                if($bill_detail->save())
-                {
-                    $parent_id=null;
-                    for ($i=1;$i<=5;$i++)
-                    {
-                        $timein_timeout= new TimeinTimeout();
+                if ($bill_detail->save()) {
+                    $parent_id = null;
+                    for ($i = 1; $i <= 5; $i++) {
+                        $timein_timeout = new TimeinTimeout();
                         $timein_timeout->setBillId($bill->getId());
                         $timein_timeout->setProductId($bill_detail->getProductId());
-                        $timein_timeout->setQuantity($bill_detail->getQuantity());
+                        $timein_timeout->setQuantity(0);
                         $timein_timeout->setMajorId($i);
                         $timein_timeout->setParentId($parent_id);
                         $timein_timeout->save();
-                        $parent_id= $timein_timeout->getId();
+                        $parent_id = $timein_timeout->getId();
                     }
                 }
                 $this->db->commit();
                 $this->flashSession->success($this->helper->translate('Create bill success'));
                 return $this->redirect('/bill');
 
-            }else{
+            } else {
 
             }
 
-        }else{
+        } else {
 
         }
         $this->view->form = $form;
@@ -129,25 +124,38 @@ class BillController extends DashboardControllerBase
     public function editAction($id)
     {
         $this->view->activemenu = [
-            'bc',
-            'group_edit'
+            'bill',
+            'bill_list'
         ];
         $this->view->names = [
             [
-                'label' => 'Edit Bill',
+                'label' => 'Sửa hóa đơn',
                 'href' => '/bill/edit'
             ]
 
         ];
         $form = new BillForm();
         $form->editbill();
-
         $bill = Bill::findFirst([
             'conditions' => 'id=:id:',
             'bind' => [
                 'id' => $id
             ]
         ]);
+        $bill_detail = BillDetail::findFirst([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $id
+            ]
+        ]);
+        $timein_timeout= TimeinTimeout::find([
+            'conditions'=>'bill_id=:bill_id:',
+            'bind'=>[
+                'bill_id'=>$id
+            ],
+            'order'=>'major_id ASC'
+        ]);
+
         $auth = $this->session->get('auth-identity');
         $this->db->begin();
         if ($this->request->isPost()) {
@@ -169,10 +177,112 @@ class BillController extends DashboardControllerBase
 
 
         } else {
+            Tag::setDefaults([
+                'name' => $bill->getName(),
+                'code' => $bill->getCode(),
+                'quantity'=>$bill_detail->getQuantity(),
+                'product_id'=>$bill_detail->getProductId(),
+                'note'=>$bill_detail->getNote(),
+                'description'=>$bill_detail->getDescription()
+            ]);
             $form->setEntity($bill);
+            $this->view->bills=$bill;
+            $this->view->timeintimeout=$timein_timeout;
         }
+        $this->view->id_time= TimeinTimeout::findFirst([
+            'conditions'=>'major_id=:major_id: and bill_id=:bill_id:',
+            'bind'=>[
+                'major_id'=>1,
+                'bill_id'=>$id
+            ]
+        ]);
         $this->view->form = $form;
 
+    }
+
+    public function editTimeIn($id_timein)
+    {
+        $this->view->disable();
+        $bill = Bill::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $id_timein
+            ]
+        ]);
+        if ($bill) {
+            $bill->setStatusId('2');
+            $bill->update();
+
+            $this->flashSession->success($this->helper->translate('Delete success'));
+        } else {
+            $this->flashSession->warning($this->helper->translate('Not found user'));
+        }
+        return $this->redirect('/bill');
+    }
+    public function editTimeOutAction($id_timeout)
+    {
+        $this->view->disable();
+        $auth = $this->session->get('auth-identity');
+        $timeout = TimeinTimeout::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $id_timeout
+            ]
+        ]);
+        if ($timeout) {
+            $timeout->setTimeIn(date('Y-m-d G:i:s'));
+            $timeout->setUserTimeinId($auth['id']);
+            $timeout->update();
+
+            $this->flashSession->success($this->helper->translate('Cập nhật thành công'));
+        } else {
+            $this->flashSession->warning($this->helper->translate('Không tìm thấy'));
+        }
+        return $this->redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    public function updateQuantityAction($id)
+    {
+        $this->view->disable();
+        $quantity = $this->request->getPost('quantity');
+        $timein_timeout = TimeinTimeout::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $id
+            ]
+        ]);
+        $this->db->begin();
+        if ($timein_timeout) {
+            $timein_timeout->setQuantity($quantity);
+            $bill_detail= BillDetail::findFirst([
+                'conditions'=>'bill_id=:bill_id:',
+                'bind'=>[
+                    'bill_id'=>$timein_timeout->getBillId()
+                ]
+            ]);
+            if($bill_detail)
+            {
+                $bill_detail->setQuantity($quantity);
+                $bill_detail->update();
+                $time= TimeinTimeout::find([
+                    'conditions'=>'bill_id=:bill_id:',
+                    'bind'=>[
+                        'bill_id'=>$bill_detail->getBillId(),
+                    ]
+                ]);
+                foreach ($time as $item)
+                {
+                    $item->setQuantity($quantity);
+                    $item->update();
+                }
+            }
+            $this->db->commit();
+            $this->flashSession->success($this->helper->translate('Cập nhật thành công'));
+
+        } else {
+            $this->flashSession->warning($this->helper->translate('Không tìm thấy'));
+        }
+        return $this->redirect($_SERVER['HTTP_REFERER']);
     }
 
 }

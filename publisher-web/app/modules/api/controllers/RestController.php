@@ -267,7 +267,7 @@ class RestController extends Controller
                     $timein_timeout= new TimeinTimeout();
                     $timein_timeout->setBillId($bill->getId());
                     $timein_timeout->setProductId($bill_detail->getProductId());
-                    $timein_timeout->setQuantity($bill_detail->getQuantity());
+                    $timein_timeout->setQuantity(0);
                     $timein_timeout->setMajorId($i);
                     $timein_timeout->setParentId($parent_id);
                     $timein_timeout->save();
@@ -298,20 +298,20 @@ class RestController extends Controller
     protected function updateTimeIn($user_id,$timeintimeout_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
-        $timeintimeout = TimeinTimeout::findFirst([
+        $timeintimein = TimeinTimeout::findFirst([
             'conditions'=>'id=:id:',
             'bind'=>[
                 'id'=> $timeintimeout_id
             ]
         ]);
-        $timeintimeout->setTimeIn(date('Y-m-d G:i:s'));
-        $timeintimeout->setUserTimeInId($user_id);
-        $timeintimeout->save();
+        $timeintimein->setTimeIn(date('Y-m-d G:i:s'));
+        $timeintimein->setUserTimeInId($user_id);
+        $timeintimein->save();
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
-                $content = json_encode($timeintimeout);
+                $content = json_encode($timeintimein);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
@@ -340,6 +340,59 @@ class RestController extends Controller
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
                 $content = json_encode($timeintimeout);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+    protected function updateQuantity($id_timeintimeout, $quantity)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $id= $id_timeintimeout;
+        $timein_timeout = TimeinTimeout::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $id
+            ]
+        ]);
+        $this->db->begin();
+        if ($timein_timeout) {
+            $bill_detail= BillDetail::findFirst([
+                'conditions'=>'bill_id=:bill_id:',
+                'bind'=>[
+                    'bill_id'=>$timein_timeout->getBillId()
+                ]
+            ]);
+            if($bill_detail)
+            {
+                $bill_detail->setQuantity($quantity);
+                $bill_detail->update();
+                $time= TimeinTimeout::find([
+                    'conditions'=>'bill_id=:bill_id:',
+                    'bind'=>[
+                        'bill_id'=>$bill_detail->getBillId(),
+                    ]
+                ]);
+                foreach ($time as $item)
+                {
+                    $item->setQuantity($quantity);
+                    $item->update();
+                }
+            }
+            $this->db->commit();
+        }
+
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($timein_timeout);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(

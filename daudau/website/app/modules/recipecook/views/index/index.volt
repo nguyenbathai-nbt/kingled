@@ -6116,7 +6116,6 @@
         }
     });
     $(document).ready(function () {
-       .
 
         $("#nav-review-panel").on('click', function () {
             $('#nav-detail-panel').removeClass('active');

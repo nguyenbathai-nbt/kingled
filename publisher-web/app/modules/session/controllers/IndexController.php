@@ -148,7 +148,7 @@ class IndexController extends ControllerBase
         // $this->view->disable();
         $language = $this->request->getQuery('language');
         if (!$this->session->get('language')) {
-            $this->session->set('language', 'en');
+            $this->session->set('language', 'vi');
         } else {
             $this->session->set('language', $language);
         }

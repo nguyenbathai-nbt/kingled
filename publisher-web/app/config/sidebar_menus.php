@@ -10,65 +10,37 @@ return new \Phalcon\Config([
 //        'text' => 'Dashboard',
 //        'href' => '/admin '
 //    ],
-    'headerbadgechain' => [
-        'cssClass' => 'header',
-        'text' => 'MANAGER USER'
-    ],
+
     'bc' => [
         'active' => true,
         'iconCss' => 'fa fa-id-badge',
-        'text' => 'User managers',
+        'text' => 'Quản lý người dùng',
         'children' => [
             'user_list' => [
                 'iconCss' => 'fa fa-clone',
-                'text' => 'List user',
+                'text' => 'Danh sách người dùng',
                 'href' => '/user'
             ],
             'user_create' => [
                 'iconCss' => 'fa fa-folder-o',
-                'text' => 'Create user',
+                'text' => 'Tạo mới tài khoản',
                 'href' => '/user/create'
             ],
         ]
     ],
-    'headerissued' => [
-        'cssClass' => 'header',
-        'text' => 'MANAGER ISSUED',
-        'role'=>'ADMIN'
-    ],
-    'is' => [
-        'active' => true,
-        'iconCss' => 'fa fa-users',
-        'text' => 'Issued managers',
-        'children' => [
-            'issuer_list' => [
-                'iconCss' => 'fa fa-clone   ',
-                'text' => 'List bill',
-                'href' => '/bill'
-            ],
-            'issuer_create' => [
-                'iconCss' => 'fa fa-users',
-                'text' => 'Create bill',
-                'href' => '/bill/create'
-            ],
-
-        ],
-        'role' => 'ADMIN'
-    ],
-
     'bill' => [
         'active' => true,
         'iconCss' => 'fa fa-id-badge',
-        'text' => 'Bill managers',
+        'text' => 'Quản lý hóa đơn',
         'children' => [
             'bill_list' => [
                 'iconCss' => 'fa fa-clone',
-                'text' => 'List bill',
+                'text' => 'Danh sách hóa đơn',
                 'href' => '/bill'
             ],
             'bill_create' => [
                 'iconCss' => 'fa fa-folder-o',
-                'text' => 'Create bill',
+                'text' => 'Tạo mới hóa đơn',
                 'href' => '/bill/create'
             ],
         ]
@@ -76,16 +48,16 @@ return new \Phalcon\Config([
     'product' => [
         'active' => true,
         'iconCss' => 'fa fa-id-badge',
-        'text' => 'Product managers',
+        'text' => 'Quản lý sản phẩm',
         'children' => [
             'product' => [
                 'iconCss' => 'fa fa-clone',
-                'text' => 'List product',
+                'text' => 'Danh sách sản phẩm',
                 'href' => '/product'
             ],
             'product_create' => [
                 'iconCss' => 'fa fa-folder-o',
-                'text' => 'Create product',
+                'text' => 'Tạo mới sản phẩm',
                 'href' => '/product/create'
             ],
         ]

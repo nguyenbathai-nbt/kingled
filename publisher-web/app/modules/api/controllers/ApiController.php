@@ -86,6 +86,13 @@ class ApiController extends RestController
         die();
 
     }
+    public function updateQuantityAction()
+    {
+
+        $this->updateQuantity($this->request->getQuery('id_timeintimeout'),$this->request->get('quantity'));
+        die();
+
+    }
 
 
 

@@ -17,8 +17,8 @@ class Helper extends Component
     public function __construct()
     {
         if (!$this->session->get('language')) {
-            $lanuage = 'en';
-            $this->session->set('language', 'en');
+            $lanuage = 'vi';
+            $this->session->set('language', $lanuage);
         } else {
             $lanuage = $this->session->get('language');
         }

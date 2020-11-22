@@ -39,8 +39,14 @@ class TimeinTimeout extends Model
         $this->hasOne('product_id', 'Publisher\Common\Models\Bill\Product', 'id', [
             'alias' => 'product'
         ]);
-        $this->hasOne('major_id', 'Publisher\Common\Models\Bill\Major', 'id', [
+        $this->hasOne('major_id', 'Publisher\Common\Models\Users\Major', 'id', [
             'alias' => 'major'
+        ]);
+        $this->hasOne('user_timein_id', 'Publisher\Common\Models\Users\Users', 'id', [
+            'alias' => 'user_timein'
+        ]);
+        $this->hasOne('user_timeout_id', 'Publisher\Common\Models\Users\Users', 'id', [
+            'alias' => 'user_timeout'
         ]);
     }
 
@@ -124,21 +130,6 @@ class TimeinTimeout extends Model
         $this->time_in = $time_in;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUserTimeIn()
-    {
-        return $this->user_time_in;
-    }
-
-    /**
-     * @param mixed $user_time_in
-     */
-    public function setUserTimeInId($user_timein_id)
-    {
-        $this->user_timein_id = $user_timein_id;
-    }
 
     /**
      * @return mixed
@@ -156,21 +147,6 @@ class TimeinTimeout extends Model
         $this->time_out= $time_out;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUserTimeOut()
-    {
-        return $this->user_time_out;
-    }
-
-    /**
-     * @param mixed $user_time_out
-     */
-    public function setUserTimeOutId($user_timeout_id)
-    {
-        $this->user_timeout_id = $user_timeout_id;
-    }
 
     /**
      * @return mixed
@@ -282,6 +258,38 @@ class TimeinTimeout extends Model
     public function setModifiedTime($modified_time)
     {
         $this->modified_time = $modified_time;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserTimeinId()
+    {
+        return $this->user_timein_id;
+    }
+
+    /**
+     * @param mixed $user_timein_id
+     */
+    public function setUserTimeinId($user_timein_id)
+    {
+        $this->user_timein_id = $user_timein_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserTimeoutId()
+    {
+        return $this->user_timeout_id;
+    }
+
+    /**
+     * @param mixed $user_timeout_id
+     */
+    public function setUserTimeoutId($user_timeout_id)
+    {
+        $this->user_timeout_id = $user_timeout_id;
     }
 
 
