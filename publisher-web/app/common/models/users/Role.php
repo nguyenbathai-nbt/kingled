@@ -24,7 +24,7 @@ class Role extends Model
     }
     public function initialize()
     {
-        $this->hasOne('major_id', 'Daudau\Common\Models\Users\Major', 'id', [
+        $this->hasOne('major_id', 'Publisher\Common\Models\Users\Major', 'id', [
             'alias' => 'major'
         ]);
     }

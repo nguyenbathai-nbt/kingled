@@ -32,9 +32,9 @@ class ApiController extends RestController
         die();
     }
 
-    public function getBillDetailByBillIdAction($bill_id)
+    public function getBillDetailByBillIdAction()
     {
-        $this->getBillDetailByBillId($bill_id);
+        $this->getBillDetailByBillId($this->request->getQuery('user_id'), $this->request->get('bill_id'));
         die();
     }
     public function getTimeInTimeOutByBillIdAction($bill_id){
@@ -88,10 +88,17 @@ class ApiController extends RestController
     }
     public function updateQuantityAction()
     {
-
         $this->updateQuantity($this->request->getQuery('id_timeintimeout'),$this->request->get('quantity'));
         die();
-
+    }
+    public function loginAction(){
+        if($this->request->isPost())
+        {
+        $this->login($this->request->getPost());
+        }else{
+            $this->renderLog('Không tìm thấy phương thúc này');
+        }
+        die();
     }
 
 

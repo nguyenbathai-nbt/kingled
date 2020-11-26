@@ -16,7 +16,8 @@ use Publisher\Common\Models\Bill\TimeinTimeout;
 use Publisher\Common\Models\Users\Major;
 use Publisher\Common\Models\Users\Role;
 use Publisher\Common\Models\Users\Status;
-use Publisher\Modules\Bill\Forms\BillForm;
+use Publisher\Common\Models\Users\Users;
+use Publisher\Common\Mvc\Auth;
 
 
 /**
@@ -92,6 +93,7 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function getAllStatus()
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -112,6 +114,7 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function getAllBill()
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -132,20 +135,48 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
-    protected function getBillDetailByBillId($bill_id)
+
+    protected function getBillDetailByBillId($user_id, $bill_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
-        $list_bill_detail = BillDetail::findFirst([
-            'conditions'=>'bill_id=:bill_id:',
-            'bind'=>[
-                'bill_id'=> $bill_id
+        $list_bill_detail = BillDetail::find([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $bill_id
             ]
         ]);
+        $user = Users::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $user_id
+            ]
+        ]);
+        if ($user->role->getMajorId() == 6) {
+            $timein_timeout = TimeinTimeout::find([
+                'conditions' => 'bill_id=:bill_id:',
+                'bind' => [
+                    'bill_id' => $bill_id,
+                ]
+            ]);
+        } else {
+            $timein_timeout = TimeinTimeout::find([
+                'conditions' => 'bill_id=:bill_id: and major_id <= :major_id:',
+                'bind' => [
+                    'bill_id' => $bill_id,
+                    'major_id' => $user->role->major->getId()
+                ]
+            ]);
+        }
+
+        $list = [
+            'bill_detail' => $list_bill_detail,
+            'timein_timeout' => $timein_timeout
+        ];
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
-                $content = json_encode($list_bill_detail);
+                $content = json_encode($list);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
@@ -157,13 +188,14 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function getTimeInTimeOutByBillId($bill_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
         $list_bill_detail = TimeinTimeout::find([
-            'conditions'=>'bill_id=:bill_id:',
-            'bind'=>[
-                'bill_id'=> $bill_id
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $bill_id
             ]
         ]);
         switch ($format) {
@@ -182,6 +214,7 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function getAllProduct()
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -202,6 +235,7 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function getAllRole()
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -222,6 +256,7 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function getAllMajor()
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -242,6 +277,7 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function createBill($post)
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -251,27 +287,24 @@ class RestController extends Controller
         $bill->setStatusId($post['status_id']);
         $bill->setPriority($post['priority']);
         $this->db->begin();
-        if($bill->save())
-        {
-            $bill_detail= new BillDetail();
+        if ($bill->save()) {
+            $bill_detail = new BillDetail();
             $bill_detail->setBillId($bill->getId());
             $bill_detail->setProductId($post['product_id']);
             $bill_detail->setQuantity($post['quantity']);
             $bill_detail->setDescription($post['description']);
             $bill_detail->setNote($post['note']);
-            if($bill_detail->save())
-            {
-                $parent_id=null;
-                for ($i=1;$i<=5;$i++)
-                {
-                    $timein_timeout= new TimeinTimeout();
+            if ($bill_detail->save()) {
+                $parent_id = null;
+                for ($i = 1; $i <= 5; $i++) {
+                    $timein_timeout = new TimeinTimeout();
                     $timein_timeout->setBillId($bill->getId());
                     $timein_timeout->setProductId($bill_detail->getProductId());
                     $timein_timeout->setQuantity(0);
                     $timein_timeout->setMajorId($i);
                     $timein_timeout->setParentId($parent_id);
                     $timein_timeout->save();
-                    $parent_id= $timein_timeout->getId();
+                    $parent_id = $timein_timeout->getId();
                 }
             }
             $this->db->commit();
@@ -291,17 +324,18 @@ class RestController extends Controller
             $this->response->setContent($content);
             return $this->response->send();
 
-        }else{
+        } else {
 
         }
     }
-    protected function updateTimeIn($user_id,$timeintimeout_id)
+
+    protected function updateTimeIn($user_id, $timeintimeout_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
         $timeintimein = TimeinTimeout::findFirst([
-            'conditions'=>'id=:id:',
-            'bind'=>[
-                'id'=> $timeintimeout_id
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $timeintimeout_id
             ]
         ]);
         $timeintimein->setTimeIn(date('Y-m-d G:i:s'));
@@ -323,13 +357,14 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
-    protected function updateTimeOut($user_id,$timeintimeout_id)
+
+    protected function updateTimeOut($user_id, $timeintimeout_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
         $timeintimeout = TimeinTimeout::findFirst([
-            'conditions'=>'id=:id:',
-            'bind'=>[
-                'id'=> $timeintimeout_id
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $timeintimeout_id
             ]
         ]);
         $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
@@ -351,10 +386,11 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function updateQuantity($id_timeintimeout, $quantity)
     {
         $format = $this->request->getQuery('format', null, 'json');
-        $id= $id_timeintimeout;
+        $id = $id_timeintimeout;
         $timein_timeout = TimeinTimeout::findFirst([
             'conditions' => 'id=:id:',
             'bind' => [
@@ -363,24 +399,22 @@ class RestController extends Controller
         ]);
         $this->db->begin();
         if ($timein_timeout) {
-            $bill_detail= BillDetail::findFirst([
-                'conditions'=>'bill_id=:bill_id:',
-                'bind'=>[
-                    'bill_id'=>$timein_timeout->getBillId()
+            $bill_detail = BillDetail::findFirst([
+                'conditions' => 'bill_id=:bill_id:',
+                'bind' => [
+                    'bill_id' => $timein_timeout->getBillId()
                 ]
             ]);
-            if($bill_detail)
-            {
+            if ($bill_detail) {
                 $bill_detail->setQuantity($quantity);
                 $bill_detail->update();
-                $time= TimeinTimeout::find([
-                    'conditions'=>'bill_id=:bill_id:',
-                    'bind'=>[
-                        'bill_id'=>$bill_detail->getBillId(),
+                $time = TimeinTimeout::find([
+                    'conditions' => 'bill_id=:bill_id:',
+                    'bind' => [
+                        'bill_id' => $bill_detail->getBillId(),
                     ]
                 ]);
-                foreach ($time as $item)
-                {
+                foreach ($time as $item) {
                     $item->setQuantity($quantity);
                     $item->update();
                 }
@@ -393,6 +427,53 @@ class RestController extends Controller
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
                 $content = json_encode($timein_timeout);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+
+    protected function login($post)
+    {
+
+        $format = $this->request->getQuery('format', null, 'json');
+        $auth = new Auth();
+        $credentials = [
+            'username' => trim($post['username']),
+            'password' => trim($post['password']),
+            'remember' => ''
+        ];
+        $check = $auth->check($credentials);
+        if ($check == 'true') {
+            $user = Users::findFirst([
+                'conditions' => 'username=:username:',
+                'bind' => [
+                    'username' => $post['username']
+                ]
+            ]);
+            $respone = [
+                'id' => $user->getId(),
+                'role_id' => $user->role->getId(),
+                'role_code' => $user->role->getCode(),
+                'major_id' => $user->role->major->getId(),
+                'major_code' => $user->role->major->getCode(),
+                'status_id' => $user->status->getId(),
+                'status_code' => $user->status->getCode(),
+            ];
+        } else {
+            $respone = $check;
+        }
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($respone);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
