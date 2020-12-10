@@ -19,6 +19,7 @@ class BillDetail extends Model
     protected $time_out;
     protected $created_time;
     protected $modified_time;
+    protected $producer_id;
 
 
 
@@ -197,6 +198,21 @@ class BillDetail extends Model
         $this->modified_time = $modified_time;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getProducerId()
+    {
+        return $this->producer_id;
+    }
+
+    /**
+     * @param mixed $producer_id
+     */
+    public function setProducerId($producer_id): void
+    {
+        $this->producer_id = $producer_id;
+    }
 
     public function getSequenceId()
     {

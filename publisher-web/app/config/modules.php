@@ -10,7 +10,8 @@ $modules_web = [
     'user',
     'bill',
     'api',
-    'product'
+    'product',
+    'producer'
 ];
 $default_module = 'session';
 
