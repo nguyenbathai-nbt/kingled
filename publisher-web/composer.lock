@@ -164,11 +164,15 @@
             "keywords": [
                 "google"
             ],
+<<<<<<< HEAD
+            "time": "2020-11-19T19:01:11+00:00"
+=======
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
                 "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.156"
             },
             "time": "2020-11-30T20:03:55+00:00"
+>>>>>>> a26b8a2ab90347ea66c23668ff93f44ad3deab08
         },
         {
             "name": "google/auth",
@@ -305,10 +309,13 @@
                 "rest",
                 "web service"
             ],
+<<<<<<< HEAD
+=======
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
                 "source": "https://github.com/guzzle/guzzle/tree/7.2.0"
             },
+>>>>>>> a26b8a2ab90347ea66c23668ff93f44ad3deab08
             "funding": [
                 {
                     "url": "https://github.com/GrahamCampbell",
@@ -538,10 +545,13 @@
                 "logging",
                 "psr-3"
             ],
+<<<<<<< HEAD
+=======
             "support": {
                 "issues": "https://github.com/Seldaek/monolog/issues",
                 "source": "https://github.com/Seldaek/monolog/tree/2.1.1"
             },
+>>>>>>> a26b8a2ab90347ea66c23668ff93f44ad3deab08
             "funding": [
                 {
                     "url": "https://github.com/Seldaek",
@@ -618,6 +628,15 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+<<<<<<< HEAD
+            "funding": [
+                {
+                    "url": "https://github.com/synchro",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-10-09T14:55:58+00:00"
+=======
             "support": {
                 "issues": "https://github.com/PHPMailer/PHPMailer/issues",
                 "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.2.0"
@@ -629,6 +648,7 @@
                 }
             ],
             "time": "2020-11-25T15:24:57+00:00"
+>>>>>>> a26b8a2ab90347ea66c23668ff93f44ad3deab08
         },
         {
             "name": "phpseclib/phpseclib",
@@ -719,10 +739,13 @@
                 "x.509",
                 "x509"
             ],
+<<<<<<< HEAD
+=======
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
                 "source": "https://github.com/phpseclib/phpseclib/tree/2.0"
             },
+>>>>>>> a26b8a2ab90347ea66c23668ff93f44ad3deab08
             "funding": [
                 {
                     "url": "https://github.com/terrafrost",
@@ -996,5 +1019,9 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
+<<<<<<< HEAD
+    "plugin-api-version": "1.1.0"
+=======
     "plugin-api-version": "2.0.0"
+>>>>>>> a26b8a2ab90347ea66c23668ff93f44ad3deab08
 }
