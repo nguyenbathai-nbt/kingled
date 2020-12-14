@@ -7,18 +7,18 @@ namespace Publisher\Common\Models\Bill;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 
-class Product extends Model
+class Conveyor extends Model
 {
     protected $id;
     protected $name;
     protected $code;
-    protected $description;
     protected $created_time;
     protected $modified_time;
 
+
     public function getSource()
     {
-        return "product";
+        return "conveyor";
     }
     public function initialize()
     {
@@ -73,21 +73,6 @@ class Product extends Model
         $this->code = $code;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param mixed $description
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
 
     /**
      * @return mixed

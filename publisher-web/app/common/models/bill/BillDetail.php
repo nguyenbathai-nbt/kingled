@@ -19,6 +19,7 @@ class BillDetail extends Model
     protected $time_out;
     protected $created_time;
     protected $modified_time;
+    protected $conveyor_id;
 
 
 
@@ -34,6 +35,9 @@ class BillDetail extends Model
         ]);
         $this->hasOne('product_id', 'Publisher\Common\Models\Bill\Product', 'id', [
             'alias' => 'product'
+        ]);
+        $this->hasOne('$conveyor_id', 'Publisher\Common\Models\Bill\Conveyor', 'id', [
+            'alias' => 'conveyor'
         ]);
     }
 
@@ -197,6 +201,21 @@ class BillDetail extends Model
         $this->modified_time = $modified_time;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getConveyorId()
+    {
+        return $this->conveyor_id;
+    }
+
+    /**
+     * @param mixed $conveyor_id
+     */
+    public function setConveyorId($conveyor_id)
+    {
+        $this->conveyor_id = $conveyor_id;
+    }
 
     public function getSequenceId()
     {

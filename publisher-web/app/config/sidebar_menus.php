@@ -62,6 +62,23 @@ return new \Phalcon\Config([
             ],
         ]
     ],
+    'producer' => [
+        'active' => true,
+        'iconCss' => 'fa fa-id-badge',
+        'text' => 'Quản lý chuyền',
+        'children' => [
+            'product' => [
+                'iconCss' => 'fa fa-clone',
+                'text' => 'Danh sách chuyền',
+                'href' => '/producer'
+            ],
+            'product_create' => [
+                'iconCss' => 'fa fa-folder-o',
+                'text' => 'Tạo mới chuyền',
+                'href' => '/producer/create'
+            ],
+        ]
+    ],
 
 
 

@@ -7,16 +7,6 @@ class ApiController extends RestController
 {
     public function initialize()
     {
-//        if ($this->checkApiKey() == true)
-//            return true;
-//        else {
-//            $this->renderLog('Can not find api key');
-//            die();
-//        }
-    }
-
-    public function getAllUserAction()
-    {
 
     }
 
@@ -38,12 +28,14 @@ class ApiController extends RestController
         die();
     }
 
-    public function getBillDetailByStatusIdAction($status_id){
+    public function getBillDetailByStatusIdAction($status_id)
+    {
         $this->getBillDetailByStatusId($status_id);
         die();
     }
 
-    public function getTimeInTimeOutByBillIdAction($bill_id){
+    public function getTimeInTimeOutByBillIdAction($bill_id)
+    {
         $this->getTimeInTimeOutByBillId($bill_id);
         die();
     }
@@ -95,6 +87,18 @@ class ApiController extends RestController
     public function updateQuantityAction()
     {
         $this->updateQuantity($this->request->getQuery('id_timeintimeout'), $this->request->get('quantity'));
+        die();
+    }
+
+
+    public function updateProducerAction()
+    {
+        $this->updateProducer($this->request->getQuery('conveyor_id'), $this->request->get('bill_id'));
+        die();
+    }
+    public function getAllConveyorAction()
+    {
+        $this->getAllConveyor();
         die();
     }
 

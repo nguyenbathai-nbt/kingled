@@ -11,6 +11,7 @@ namespace Publisher\Modules\Api\Controllers;
 use Phalcon\Mvc\Controller;
 use Publisher\Common\Models\Bill\Bill;
 use Publisher\Common\Models\Bill\BillDetail;
+use Publisher\Common\Models\Bill\Conveyor;
 use Publisher\Common\Models\Bill\Product;
 use Publisher\Common\Models\Bill\TimeinTimeout;
 use Publisher\Common\Models\Users\Major;
@@ -485,6 +486,59 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+    protected function updateProducer($conveyor_id, $bill_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+
+        $bill_detail = BillDetail::findFirst([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $bill_id
+            ]
+        ]);
+        $this->db->begin();
+        if ($bill_detail) {
+            $bill_detail->setConveyorId($conveyor_id);
+            $bill_detail->save();
+            $this->db->commit();
+        }
+
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($bill_detail);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+    protected function getAllConveyor()
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $conveyor = Conveyor::find();
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($conveyor);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
 
     protected function login($post)
     {
@@ -532,6 +586,8 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
+
 
 
 }
