@@ -166,17 +166,64 @@ class RestController extends Controller
                     'major_id' => $user->role->major->getId()
                 ]
             ]);
+            $list_timein_timeout=[];
+            foreach ($timein_timeout as $item)
+            {
+                $items=[
+                    'id'=>$item->getId(),
+                    'bill_id'=>$item->getBillId(),
+                    'product_id'=>$item->getProductId(),
+                    'quantity'=>$item->getQuantity(),
+                    'time_in'=>$item->getTimeIn(),
+                    'user_timein_id'=>$item->getUserTimeinId(),
+                    'time_out'=>$item->getTimeOut(),
+                    'user_timeout_id'=>$item->getUserTimeoutId(),
+                    'major_id'=>$item->getMajorId(),
+                    'major_code'=>$item->major->getCode(),
+                    'major_name'=>$item->major->getName(),
+                    'delay_status'=>$item->getDelayStatus(),
+                    'count_time'=>$item->getCountTime(),
+                    'parent_id'=>$item->getParentId(),
+                    'description'=>$item->getDescription()
+                ];
+                $list_timein_timeout[]=$items;
+            }
         }
 
         $list = [
             'bill_detail' => $list_bill_detail,
-            'timein_timeout' => $timein_timeout
+            'timein_timeout' => $list_timein_timeout
         ];
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
                 $content = json_encode($list);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+
+    protected function getBillDetailByStatusId($status_id){
+        $format = $this->request->getQuery('format', null, 'json');
+        $list_bill = Bill::find([
+            'conditions' => 'status_id=:status_id:',
+            'bind' => [
+                'status_id' => $status_id
+            ]
+        ]);
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($list_bill);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
@@ -485,5 +532,6 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
 
 }

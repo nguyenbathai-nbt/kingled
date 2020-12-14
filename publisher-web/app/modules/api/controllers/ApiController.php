@@ -26,7 +26,7 @@ class ApiController extends RestController
         die();
     }
 
-        public function getAllBillAction()
+    public function getAllBillAction()
     {
         $this->getAllBill();
         die();
@@ -37,6 +37,12 @@ class ApiController extends RestController
         $this->getBillDetailByBillId($this->request->getQuery('user_id'), $this->request->get('bill_id'));
         die();
     }
+
+    public function getBillDetailByStatusIdAction($status_id){
+        $this->getBillDetailByStatusId($status_id);
+        die();
+    }
+
     public function getTimeInTimeOutByBillIdAction($bill_id){
         $this->getTimeInTimeOutByBillId($bill_id);
         die();
@@ -62,10 +68,9 @@ class ApiController extends RestController
 
     public function createBillAction()
     {
-        if($this->request->isPost())
-        {
+        if ($this->request->isPost()) {
             $this->createBill($this->request->getPost());
-        }else{
+        } else {
             $this->renderLog('Không tìm thấy phương thúc này');
         }
 
@@ -82,26 +87,26 @@ class ApiController extends RestController
     public function updateTimeOutAction()
     {
 
-        $this->updateTimeOut($this->request->getQuery('user_id'),$this->request->get('timeintimeout_id'));
+        $this->updateTimeOut($this->request->getQuery('user_id'), $this->request->get('timeintimeout_id'));
         die();
 
     }
+
     public function updateQuantityAction()
     {
-        $this->updateQuantity($this->request->getQuery('id_timeintimeout'),$this->request->get('quantity'));
+        $this->updateQuantity($this->request->getQuery('id_timeintimeout'), $this->request->get('quantity'));
         die();
     }
-    public function loginAction(){
-        if($this->request->isPost())
-        {
-        $this->login($this->request->getPost());
-        }else{
+
+    public function loginAction()
+    {
+        if ($this->request->isPost()) {
+            $this->login($this->request->getPost());
+        } else {
             $this->renderLog('Không tìm thấy phương thúc này');
         }
         die();
     }
-
-
 
 
 }
