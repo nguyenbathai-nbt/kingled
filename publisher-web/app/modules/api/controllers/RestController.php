@@ -438,6 +438,38 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+    protected function updateProducer($producer_id, $bill_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+
+        $bill_detail = BillDetail::findFirst([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $bill_id
+            ]
+        ]);
+        $this->db->begin();
+        if ($bill_detail) {
+            $bill_detail->setProducerId($producer_id);
+            $this->db->commit();
+        }
+
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($bill_detail);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
 
     protected function login($post)
     {
