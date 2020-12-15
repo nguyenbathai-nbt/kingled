@@ -27,7 +27,7 @@
         </div>
         <div class="box-footer">
             <div class="pull-right">
-                <a href="{{ url.get() }}issuer" class="btn btn-default"><i class="icon left arrow"></i> Go back</a>
+                <a href="{{ url.get() }}bill" class="btn btn-default"><i class="icon left arrow"></i> Go back</a>
                 <input type="submit" class="btn btn-primary" value="Save"/>
             </div>
         </div>
@@ -55,6 +55,7 @@
                         <th> {{ helper.translate('Thời gian ra') }}</th>
                         <th> {{ helper.translate('Số lượng TP') }}</th>
                         <th> {{ helper.translate('Xác nhận') }}</th>
+                        <th> {{ helper.translate('Thời gian') }}</th>
                         <th> {{ helper.translate('Ghi chú') }}</th>
                         <th> {{ helper.translate('Thao tác') }}</th>
                     </tr>
@@ -99,6 +100,7 @@
 
                             <td> {% if item.getUserTimeinId() is not null %}{{ item.user_timein.getUsername() }}{% endif %} |
                                 {% if item.getUserTimeoutId() is not null %}{{ item.user_timeout.getUsername() }}{% endif %}</td>
+                            <td>{{ item.getCountTime() }}</td>
                             <td>{{ item.getDescription() }}</td>
                             <td>
                                 <a class="btn btn-primary"

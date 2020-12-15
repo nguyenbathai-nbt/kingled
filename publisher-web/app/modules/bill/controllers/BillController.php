@@ -96,6 +96,7 @@ class BillController extends DashboardControllerBase
         } else {
             Tag::setDefaults([
                 'code' => $this->generateCode(),
+                'name' => $this->generateCode(),
             ]);
         }
         $this->view->form = $form;
@@ -193,7 +194,12 @@ class BillController extends DashboardControllerBase
                 }
                 $form->setEntity($bill);
             } else {
-                $this->db->commit();
+                $form->bind($post, $bill_detail);
+                if($bill_detail->save())
+                {   
+                    $this->db->commit();
+                }
+
                 $this->flashSession->success('Cập nhật hóa đơn thành công');
                 return $this->redirect('/bill');
             }
