@@ -21,6 +21,11 @@ class ApiController extends RestController
         $this->getAllBill();
         die();
     }
+    public function getAllUserAction()
+    {
+        $this->getAllUser();
+    }
+
 
     public function getBillDetailByBillIdAction()
     {

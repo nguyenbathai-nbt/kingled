@@ -116,6 +116,27 @@ class RestController extends Controller
         return $this->response->send();
     }
 
+    protected function getAllUser()
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $list_user = Users::find();
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($list_user);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+
     protected function getAllBill()
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -220,11 +241,26 @@ class RestController extends Controller
                 'status_id' => $status_id
             ]
         ]);
+        $list=[];
+        foreach ($list_bill as $item)
+        {
+            $bill_detail=BillDetail::findFirst([
+                'conditions'=>'bill_id=:bill_id:',
+                'bind'=>[
+                    'bill_id'=>$item->getId()
+                ]
+            ]);
+            $list[]=[
+                'bill'=>$item,
+                'bill_detail'=>$bill_detail,
+                'product'=>$bill_detail->product
+            ];
+        }
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
-                $content = json_encode($list_bill);
+                $content = json_encode($list);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
@@ -416,6 +452,7 @@ class RestController extends Controller
             ]
         ]);
         $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
+       $timeintimeout->setCountTime(strtotime($timeintimeout->getTimeOut())-strtotime($timeintimeout->getTimeIn()));
         $timeintimeout->setUserTimeOutId($user_id);
         $timeintimeout->save();
         switch ($format) {

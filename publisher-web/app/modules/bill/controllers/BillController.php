@@ -183,7 +183,8 @@ class BillController extends DashboardControllerBase
                 'quantity'=>$bill_detail->getQuantity(),
                 'product_id'=>$bill_detail->getProductId(),
                 'note'=>$bill_detail->getNote(),
-                'description'=>$bill_detail->getDescription()
+                'description'=>$bill_detail->getDescription(),
+                'conveyor_id'=>$bill_detail->getConveyorId()
             ]);
             $form->setEntity($bill);
             $this->view->bills=$bill;
@@ -231,6 +232,7 @@ class BillController extends DashboardControllerBase
         ]);
         if ($timeout) {
             $timeout->setTimeIn(date('Y-m-d G:i:s'));
+            $timeout->
             $timeout->setUserTimeinId($auth['id']);
             $timeout->update();
 

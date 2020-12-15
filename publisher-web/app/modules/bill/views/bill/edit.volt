@@ -11,6 +11,7 @@
                     {{ form.renderDecorated('code') }}
                     {{ form.renderDecorated('quantity') }}
                     {{ form.renderDecorated('product_id') }}
+                    {{ form.renderDecorated('conveyor_id') }}
 
 
 
