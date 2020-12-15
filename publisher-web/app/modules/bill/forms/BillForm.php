@@ -40,7 +40,7 @@ class BillForm extends Form
     public function createbill()
     {
         $this->add(Form::addElement('name', 'Tên', 'Text', ['required' => true]));
-        $this->add(Form::addElement('code', 'Mã', 'Text', ['required' => true]));
+        $this->add(Form::addElement('code', 'Mã', 'Text', ['required' => true,'readonly' => true]));
         $this->add(Form::addElement('quantity', 'Số lượng', 'Text', ['required' => true]));
         $this->add(Form::addElement('status_id', 'Trạng thái', 'Select', ['required' => true, 'data-type' => 'select2', 'using' => ['id', 'name']], Status::find()));
         $this->add(Form::addElement('product_id', 'Sản phẩm', 'Select', ['required' => true, 'data-type' => 'select2', 'using' => ['id', 'code']], Product::find()));

@@ -28,9 +28,7 @@ class Bill extends Model
         $this->hasOne('status_id', 'Publisher\Common\Models\Users\Status', 'id', [
             'alias' => 'status'
         ]);
-        $this->hasOne('status_id', 'Publisher\Common\Models\Users\Status', 'id', [
-            'alias' => 'status'
-        ]);
+
     }
 
     /**

@@ -253,7 +253,8 @@ class RestController extends Controller
             $list[]=[
                 'bill'=>$item,
                 'bill_detail'=>$bill_detail,
-                'product'=>$bill_detail->product
+                'product'=>$bill_detail->product,
+                'status'=>$item->status
             ];
         }
         switch ($format) {
@@ -261,6 +262,43 @@ class RestController extends Controller
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
                 $content = json_encode($list);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+
+    protected function generateCodeBill()
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $last_bill = Bill::findFirst([
+           'order'=>'id DESC'
+        ]);
+        $code =mb_split('-',$last_bill->getCode());
+        if($code[0]==date('dmY'))
+        {
+            $count=(int)$code[1]+1;
+            if(strlen($count)==1)
+            {
+                $count=(string)'00'. (string)$count;
+            }else if (strlen($count)==2){
+                $count=(string)'0'. (string)$count;
+            }
+            $new_code= $code[0].'-'.$count;
+        }else{
+            $new_code=date('dmY').'-'.'001';
+        }
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($new_code);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
