@@ -659,8 +659,8 @@ class RestController extends Controller
     {
 
         $format = $this->request->getQuery('format', null, 'json');
-        $array=json_encode($post);
-        $post=json_decode($array,true);
+      //  $array=json_encode($post);
+      //  $post=json_decode($array,true);
         if($post)
         {
             $auth = new Auth();

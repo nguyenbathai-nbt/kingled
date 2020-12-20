@@ -120,7 +120,8 @@ class ApiController extends RestController
     public function loginAction()
     {
         if ($this->request->isPost()) {
-            $this->login($this->request->getJsonRawBody());
+          //  $this->login($this->request->getJsonRawBody());
+            $this->login($this->request->getPost());
         } else {
             $this->renderLog('Không tìm thấy phương thúc này');
         }
