@@ -614,7 +614,40 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
-
+    protected function setBillClosed($bill_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $bill = Bill::findFirst([
+            'conditions'=>'id=:id:',
+            'bind'=>[
+                'id'=>$bill_id
+            ]
+        ]);
+        if($bill)
+        {
+            $status=Status::findFirst(['conditions'=>'code=:code:','bind'=>['code'=>'DA_XONG']]);
+            $bill->setStatusId($status->getId());
+            $bill->save();
+            $respone=['success'=>'Đổi trạng thái thành công'];
+        }else{
+            $respone=['error'=>'Không tìm thấy hóa đơn'];
+        }
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($respone);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
     protected function login($post)
     {
 

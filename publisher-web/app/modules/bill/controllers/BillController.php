@@ -196,7 +196,7 @@ class BillController extends DashboardControllerBase
             } else {
                 $form->bind($post, $bill_detail);
                 if($bill_detail->save())
-                {   
+                {
                     $this->db->commit();
                 }
 

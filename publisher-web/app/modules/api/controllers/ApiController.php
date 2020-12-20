@@ -44,6 +44,10 @@ class ApiController extends RestController
         $this->generateCodeBill();
         die();
     }
+    public function setBillClosedAction(){
+        $this->setBillClosed($this->request->getQuery('bill_id'));
+        die();
+    }
 
     public function getTimeInTimeOutByBillIdAction($bill_id)
     {
