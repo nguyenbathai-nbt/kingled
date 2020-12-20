@@ -76,7 +76,7 @@ class ApiController extends RestController
     public function createBillAction()
     {
         if ($this->request->isPost()) {
-            $this->createBill($this->request->getPost());
+            $this->createBill($this->request->getJsonRawBody());
         } else {
             $this->renderLog('Không tìm thấy phương thúc này');
         }
@@ -120,7 +120,7 @@ class ApiController extends RestController
     public function loginAction()
     {
         if ($this->request->isPost()) {
-            $this->login($this->request->getPost());
+            $this->login($this->request->getJsonRawBody());
         } else {
             $this->renderLog('Không tìm thấy phương thúc này');
         }

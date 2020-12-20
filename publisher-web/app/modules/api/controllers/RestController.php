@@ -403,52 +403,59 @@ class RestController extends Controller
     protected function createBill($post)
     {
         $format = $this->request->getQuery('format', null, 'json');
+        $array=json_encode($post);
+        $post=json_decode($array,true);
+
         $bill = new Bill();
         $bill->setName($post['name']);
         $bill->setCode($post['code']);
         $bill->setStatusId($post['status_id']);
         $bill->setPriority($post['priority']);
         $this->db->begin();
-        if ($bill->save()) {
-            $bill_detail = new BillDetail();
-            $bill_detail->setBillId($bill->getId());
-            $bill_detail->setProductId($post['product_id']);
-            $bill_detail->setQuantity($post['quantity']);
-            $bill_detail->setDescription($post['description']);
-            $bill_detail->setNote($post['note']);
-            if ($bill_detail->save()) {
-                $parent_id = null;
-                for ($i = 1; $i <= 5; $i++) {
-                    $timein_timeout = new TimeinTimeout();
-                    $timein_timeout->setBillId($bill->getId());
-                    $timein_timeout->setProductId($bill_detail->getProductId());
-                    $timein_timeout->setQuantity(0);
-                    $timein_timeout->setMajorId($i);
-                    $timein_timeout->setParentId($parent_id);
-                    $timein_timeout->save();
-                    $parent_id = $timein_timeout->getId();
+        if(!$post)
+        {
+            if ($bill->save()) {
+                $bill_detail = new BillDetail();
+                $bill_detail->setBillId($bill->getId());
+                $bill_detail->setProductId($post['product_id']);
+                $bill_detail->setQuantity($post['quantity']);
+                $bill_detail->setDescription($post['description']);
+                $bill_detail->setNote($post['note']);
+                if ($bill_detail->save()) {
+                    $parent_id = null;
+                    for ($i = 1; $i <= 5; $i++) {
+                        $timein_timeout = new TimeinTimeout();
+                        $timein_timeout->setBillId($bill->getId());
+                        $timein_timeout->setProductId($bill_detail->getProductId());
+                        $timein_timeout->setQuantity(0);
+                        $timein_timeout->setMajorId($i);
+                        $timein_timeout->setParentId($parent_id);
+                        $timein_timeout->save();
+                        $parent_id = $timein_timeout->getId();
+                    }
+                    $this->db->commit();
                 }
+                $respone=$bill;
             }
-            $this->db->commit();
-            switch ($format) {
-                case 'json':
-                    $contentType = 'application/json';
-                    $encoding = 'UTF-8';
-                    $content = json_encode($bill);
-                    break;
-                default:
-                    throw new \Api\Exception\NotImplementedException(
-                        sprintf('Requested format %s is not supported yet.', $format)
-                    );
-                    break;
-            }
-            $this->response->setContentType($contentType, $encoding);
-            $this->response->setContent($content);
-            return $this->response->send();
-
-        } else {
-
+        }else{
+            $respone=['error'=>'Không nhận được dữ liệu'];
         }
+
+        switch ($format) {
+            case 'json':
+                $contentType = 'application/json';
+                $encoding = 'UTF-8';
+                $content = json_encode($respone);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format %s is not supported yet.', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
     }
 
     protected function updateTimeIn($user_id, $timeintimeout_id)
@@ -652,37 +659,45 @@ class RestController extends Controller
     {
 
         $format = $this->request->getQuery('format', null, 'json');
-        $auth = new Auth();
-        $credentials = [
-            'username' => trim($post['username']),
-            'password' => trim($post['password']),
-            'remember' => ''
-        ];
-        $check = $auth->check($credentials);
-        if ($check == 'true') {
-            $user = Users::findFirst([
-                'conditions' => 'username=:username:',
-                'bind' => [
-                    'username' => $post['username']
-                ]
-            ]);
-            $respone = [
-                'id' => $user->getId(),
-                'role_id' => $user->role->getId(),
-                'role_code' => $user->role->getCode(),
-                'major_id' => $user->role->major->getId(),
-                'major_code' => $user->role->major->getCode(),
-                'status_id' => $user->status->getId(),
-                'status_code' => $user->status->getCode(),
+        $array=json_encode($post);
+        $post=json_decode($array,true);
+        if($post)
+        {
+            $auth = new Auth();
+            $credentials = [
+                'username' => trim($post['username']),
+                'password' => trim($post['password']),
+                'remember' => ''
             ];
-        } else {
-            $respone = $check;
+            $check = $auth->check($credentials);
+            if ($check == 'true') {
+                $user = Users::findFirst([
+                    'conditions' => 'username=:username:',
+                    'bind' => [
+                        'username' => $post['username']
+                    ]
+                ]);
+                $respone = [
+                    'id' => $user->getId(),
+                    'role_id' => $user->role->getId(),
+                    'role_code' => $user->role->getCode(),
+                    'major_id' => $user->role->major->getId(),
+                    'major_code' => $user->role->major->getCode(),
+                    'status_id' => $user->status->getId(),
+                    'status_code' => $user->status->getCode(),
+                ];
+            } else {
+                $respone = $check;
+            }
+        }else{
+            $respone=['error'=>'Không nhận được dữ liệu'];
         }
+
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
-                $content = json_encode($respone);
+                $content =json_encode($respone);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
