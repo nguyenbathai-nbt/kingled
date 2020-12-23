@@ -403,8 +403,8 @@ class RestController extends Controller
     protected function createBill($post)
     {
         $format = $this->request->getQuery('format', null, 'json');
-        $array=json_encode($post);
-        $post=json_decode($array,true);
+      //  $array=json_encode($post);
+      //  $post=json_decode($array,true);
 
         $bill = new Bill();
         $bill->setName($post['name']);

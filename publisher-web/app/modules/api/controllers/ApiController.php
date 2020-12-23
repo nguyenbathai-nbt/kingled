@@ -76,7 +76,8 @@ class ApiController extends RestController
     public function createBillAction()
     {
         if ($this->request->isPost()) {
-            $this->createBill($this->request->getJsonRawBody());
+           // $this->createBill($this->request->getJsonRawBody());
+            $this->createBill($this->request->getPost());
         } else {
             $this->renderLog('Không tìm thấy phương thúc này');
         }
@@ -105,12 +106,12 @@ class ApiController extends RestController
         die();
     }
 
-
     public function updateProducerAction()
     {
         $this->updateProducer($this->request->getQuery('conveyor_id'), $this->request->get('bill_id'));
         die();
     }
+
     public function getAllConveyorAction()
     {
         $this->getAllConveyor();
@@ -120,7 +121,7 @@ class ApiController extends RestController
     public function loginAction()
     {
         if ($this->request->isPost()) {
-          //  $this->login($this->request->getJsonRawBody());
+            //$this->login($this->request->getJsonRawBody());
             $this->login($this->request->getPost());
         } else {
             $this->renderLog('Không tìm thấy phương thúc này');
