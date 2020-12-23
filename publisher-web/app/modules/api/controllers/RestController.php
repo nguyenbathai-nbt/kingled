@@ -405,15 +405,14 @@ class RestController extends Controller
         $format = $this->request->getQuery('format', null, 'json');
       //  $array=json_encode($post);
       //  $post=json_decode($array,true);
-
-        $bill = new Bill();
-        $bill->setName($post['name']);
-        $bill->setCode($post['code']);
-        $bill->setStatusId($post['status_id']);
-        $bill->setPriority($post['priority']);
         $this->db->begin();
-        if(!$post)
+        if($post)
         {
+            $bill = new Bill();
+            $bill->setName($post['name']);
+            $bill->setCode($post['code']);
+            $bill->setStatusId($post['status_id']);
+            $bill->setPriority($post['priority']);
             if ($bill->save()) {
                 $bill_detail = new BillDetail();
                 $bill_detail->setBillId($bill->getId());
