@@ -188,27 +188,26 @@ class RestController extends Controller
                     'major_id' => $user->role->major->getId()
                 ]
             ]);
-            $list_timein_timeout=[];
-            foreach ($timein_timeout as $item)
-            {
-                $items=[
-                    'id'=>$item->getId(),
-                    'bill_id'=>$item->getBillId(),
-                    'product_id'=>$item->getProductId(),
-                    'quantity'=>$item->getQuantity(),
-                    'time_in'=>$item->getTimeIn(),
-                    'user_timein_id'=>$item->getUserTimeinId(),
-                    'time_out'=>$item->getTimeOut(),
-                    'user_timeout_id'=>$item->getUserTimeoutId(),
-                    'major_id'=>$item->getMajorId(),
-                    'major_code'=>$item->major->getCode(),
-                    'major_name'=>$item->major->getName(),
-                    'delay_status'=>$item->getDelayStatus(),
-                    'count_time'=>$item->getCountTime(),
-                    'parent_id'=>$item->getParentId(),
-                    'description'=>$item->getDescription()
+            $list_timein_timeout = [];
+            foreach ($timein_timeout as $item) {
+                $items = [
+                    'id' => $item->getId(),
+                    'bill_id' => $item->getBillId(),
+                    'product_id' => $item->getProductId(),
+                    'quantity' => $item->getQuantity(),
+                    'time_in' => $item->getTimeIn(),
+                    'user_timein_id' => $item->getUserTimeinId(),
+                    'time_out' => $item->getTimeOut(),
+                    'user_timeout_id' => $item->getUserTimeoutId(),
+                    'major_id' => $item->getMajorId(),
+                    'major_code' => $item->major->getCode(),
+                    'major_name' => $item->major->getName(),
+                    'delay_status' => $item->getDelayStatus(),
+                    'count_time' => $item->getCountTime(),
+                    'parent_id' => $item->getParentId(),
+                    'description' => $item->getDescription()
                 ];
-                $list_timein_timeout[]=$items;
+                $list_timein_timeout[] = $items;
             }
         }
 
@@ -233,7 +232,8 @@ class RestController extends Controller
         return $this->response->send();
     }
 
-    protected function getBillDetailByStatusId($status_id){
+    protected function getBillDetailByStatusId($status_id)
+    {
         $format = $this->request->getQuery('format', null, 'json');
         $list_bill = Bill::find([
             'conditions' => 'status_id=:status_id:',
@@ -241,20 +241,19 @@ class RestController extends Controller
                 'status_id' => $status_id
             ]
         ]);
-        $list=[];
-        foreach ($list_bill as $item)
-        {
-            $bill_detail=BillDetail::findFirst([
-                'conditions'=>'bill_id=:bill_id:',
-                'bind'=>[
-                    'bill_id'=>$item->getId()
+        $list = [];
+        foreach ($list_bill as $item) {
+            $bill_detail = BillDetail::findFirst([
+                'conditions' => 'bill_id=:bill_id:',
+                'bind' => [
+                    'bill_id' => $item->getId()
                 ]
             ]);
-            $list[]=[
-                'bill'=>$item,
-                'bill_detail'=>$bill_detail,
-                'product'=>$bill_detail->product,
-                'status'=>$item->status
+            $list[] = [
+                'bill' => $item,
+                'bill_detail' => $bill_detail,
+                'product' => $bill_detail->product,
+                'status' => $item->status
             ];
         }
         switch ($format) {
@@ -278,21 +277,19 @@ class RestController extends Controller
     {
         $format = $this->request->getQuery('format', null, 'json');
         $last_bill = Bill::findFirst([
-           'order'=>'id DESC'
+            'order' => 'id DESC'
         ]);
-        $code =mb_split('-',$last_bill->getCode());
-        if($code[0]==date('dmY'))
-        {
-            $count=(int)$code[1]+1;
-            if(strlen($count)==1)
-            {
-                $count=(string)'00'. (string)$count;
-            }else if (strlen($count)==2){
-                $count=(string)'0'. (string)$count;
+        $code = mb_split('-', $last_bill->getCode());
+        if ($code[0] == date('dmY')) {
+            $count = (int)$code[1] + 1;
+            if (strlen($count) == 1) {
+                $count = (string)'00' . (string)$count;
+            } else if (strlen($count) == 2) {
+                $count = (string)'0' . (string)$count;
             }
-            $new_code= $code[0].'-'.$count;
-        }else{
-            $new_code=date('dmY').'-'.'001';
+            $new_code = $code[0] . '-' . $count;
+        } else {
+            $new_code = date('dmY') . '-' . '001';
         }
         switch ($format) {
             case 'json':
@@ -403,41 +400,63 @@ class RestController extends Controller
     protected function createBill($post)
     {
         $format = $this->request->getQuery('format', null, 'json');
-      //  $array=json_encode($post);
-      //  $post=json_decode($array,true);
+        //  $array=json_encode($post);
+        //  $post=json_decode($array,true);
         $this->db->begin();
-        if($post)
-        {
-            $bill = new Bill();
-            $bill->setName($post['name']);
-            $bill->setCode($post['code']);
-            $bill->setStatusId($post['status_id']);
-            $bill->setPriority($post['priority']);
-            if ($bill->save()) {
-                $bill_detail = new BillDetail();
-                $bill_detail->setBillId($bill->getId());
-                $bill_detail->setProductId($post['product_id']);
-                $bill_detail->setQuantity($post['quantity']);
-                $bill_detail->setDescription($post['description']);
-                $bill_detail->setNote($post['note']);
-                if ($bill_detail->save()) {
-                    $parent_id = null;
-                    for ($i = 1; $i <= 5; $i++) {
-                        $timein_timeout = new TimeinTimeout();
-                        $timein_timeout->setBillId($bill->getId());
-                        $timein_timeout->setProductId($bill_detail->getProductId());
-                        $timein_timeout->setQuantity(0);
-                        $timein_timeout->setMajorId($i);
-                        $timein_timeout->setParentId($parent_id);
-                        $timein_timeout->save();
-                        $parent_id = $timein_timeout->getId();
-                    }
-                    $this->db->commit();
-                }
-                $respone=$bill;
+        if ($post) {
+            $respone = [];
+            if (!$post['name']) {
+                $respone[] = 'Không có dữ liệu tên hóa đơn (name)';
             }
-        }else{
-            $respone=['error'=>'Không nhận được dữ liệu'];
+            if (!$post['code']) {
+                $respone[] = 'Không có dữ liệu mã hóa đơn (code)';
+            }
+            if (!$post['quantity']) {
+                $respone[] = 'Không có dữ liệu số lượng sản phẩm (quantity)';
+            }
+            if (!$post['product_id']) {
+                $respone[] = 'Không có dữ liệu id sản phẩm (product_id)';
+            }
+            if (!$post['status_id']) {
+                $respone[] = 'Không có dữ liệu id trạng thái (status_id)';
+            }
+            if (!$post['priority']) {
+                $respone[] = 'Không có dữ liệu độ ưu tiên (priority)';
+            }
+
+            if (!$respone) {
+                $bill = new Bill();
+                $bill->setName($post['name']);
+                $bill->setCode($post['code']);
+                $bill->setStatusId($post['status_id']);
+                $bill->setPriority($post['priority']);
+                if ($bill->save()) {
+                    $bill_detail = new BillDetail();
+                    $bill_detail->setBillId($bill->getId());
+                    $bill_detail->setProductId($post['product_id']);
+                    $bill_detail->setQuantity($post['quantity']);
+                    $bill_detail->setDescription($post['description']);
+                    $bill_detail->setNote($post['note']);
+                    if ($bill_detail->save()) {
+                        $parent_id = null;
+                        for ($i = 1; $i <= 5; $i++) {
+                            $timein_timeout = new TimeinTimeout();
+                            $timein_timeout->setBillId($bill->getId());
+                            $timein_timeout->setProductId($bill_detail->getProductId());
+                            $timein_timeout->setQuantity(0);
+                            $timein_timeout->setMajorId($i);
+                            $timein_timeout->setParentId($parent_id);
+                            $timein_timeout->save();
+                            $parent_id = $timein_timeout->getId();
+                        }
+                         $this->db->commit();
+                    }
+                    $respone = $bill;
+                }
+            }
+
+        } else {
+            $respone = ['error' => 'Không nhận được dữ liệu'];
         }
 
         switch ($format) {
@@ -496,7 +515,7 @@ class RestController extends Controller
             ]
         ]);
         $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
-       $timeintimeout->setCountTime(strtotime($timeintimeout->getTimeOut())-strtotime($timeintimeout->getTimeIn()));
+        $timeintimeout->setCountTime(strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
         $timeintimeout->setUserTimeOutId($user_id);
         $timeintimeout->save();
         switch ($format) {
@@ -567,6 +586,7 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function updateProducer($conveyor_id, $bill_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -600,6 +620,7 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function getAllConveyor()
     {
         $format = $this->request->getQuery('format', null, 'json');
@@ -620,23 +641,23 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function setBillClosed($bill_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
         $bill = Bill::findFirst([
-            'conditions'=>'id=:id:',
-            'bind'=>[
-                'id'=>$bill_id
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $bill_id
             ]
         ]);
-        if($bill)
-        {
-            $status=Status::findFirst(['conditions'=>'code=:code:','bind'=>['code'=>'DA_XONG']]);
+        if ($bill) {
+            $status = Status::findFirst(['conditions' => 'code=:code:', 'bind' => ['code' => 'DA_XONG']]);
             $bill->setStatusId($status->getId());
             $bill->save();
-            $respone=['success'=>'Đổi trạng thái thành công'];
-        }else{
-            $respone=['error'=>'Không tìm thấy hóa đơn'];
+            $respone = ['success' => 'Đổi trạng thái thành công'];
+        } else {
+            $respone = ['error' => 'Không tìm thấy hóa đơn'];
         }
         switch ($format) {
             case 'json':
@@ -654,14 +675,14 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
+
     protected function login($post)
     {
 
         $format = $this->request->getQuery('format', null, 'json');
-      //  $array=json_encode($post);
-      //  $post=json_decode($array,true);
-        if($post)
-        {
+        //  $array=json_encode($post);
+        //  $post=json_decode($array,true);
+        if ($post) {
             $auth = new Auth();
             $credentials = [
                 'username' => trim($post['username']),
@@ -688,15 +709,15 @@ class RestController extends Controller
             } else {
                 $respone = $check;
             }
-        }else{
-            $respone=['error'=>'Không nhận được dữ liệu'];
+        } else {
+            $respone = ['error' => 'Không nhận được dữ liệu'];
         }
 
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
-                $content =json_encode($respone);
+                $content = json_encode($respone);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
@@ -708,8 +729,6 @@ class RestController extends Controller
         $this->response->setContent($content);
         return $this->response->send();
     }
-
-
 
 
 }
