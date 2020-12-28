@@ -446,13 +446,23 @@ class RestController extends Controller
                             $timein_timeout->setQuantity(0);
                             $timein_timeout->setMajorId($i);
                             $timein_timeout->setParentId($parent_id);
-                            $timein_timeout->save();
+                            if($timein_timeout->save()){
+
+                            }else{
+                                $respone = ['error' => 'Không tạo thời gian vào ra thành công'];
+                                break;
+                            }
                             $parent_id = $timein_timeout->getId();
                         }
                          $this->db->commit();
+                    }else{
+                        $respone = ['error' => 'Không chi tiết tạo hóa đơn thành công'];
                     }
                    // $respone = $bill;
                     $respone = ['success' => 'Tạo hóa đơn mói thành công'];
+                }
+                else{
+                    $respone = ['error' => 'Không tạo hóa đơn thành công'];
                 }
             }
 
