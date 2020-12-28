@@ -194,6 +194,8 @@ class RestController extends Controller
                     'id' => $item->getId(),
                     'bill_id' => $item->getBillId(),
                     'product_id' => $item->getProductId(),
+                    'product_name' => $item->product->getName(),
+                    'product_code' => $item->product->getCode(),
                     'quantity' => $item->getQuantity(),
                     'time_in' => $item->getTimeIn(),
                     'user_timein_id' => $item->getUserTimeinId(),
