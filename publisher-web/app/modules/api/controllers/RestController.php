@@ -455,11 +455,13 @@ class RestController extends Controller
                             $parent_id = $timein_timeout->getId();
                         }
                          $this->db->commit();
+                        // $respone = $bill;
+                        $respone = ['success' => 'Tạo hóa đơn mói thành công'];
                     }else{
                         $respone = ['error' => 'Không chi tiết tạo hóa đơn thành công'];
                     }
-                   // $respone = $bill;
-                    $respone = ['success' => 'Tạo hóa đơn mói thành công'];
+
+
                 }
                 else{
                     $respone = ['error' => 'Không tạo hóa đơn thành công'];
