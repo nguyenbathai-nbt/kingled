@@ -279,8 +279,7 @@ class RestController extends Controller
         $last_bill = Bill::findFirst([
             'order' => 'id DESC'
         ]);
-        if($last_bill)
-        {
+        if ($last_bill) {
             $code = mb_split('-', $last_bill->getCode());
             if ($code[0] == date('dmY')) {
                 $count = (int)$code[1] + 1;
@@ -293,7 +292,7 @@ class RestController extends Controller
             } else {
                 $new_code = date('dmY') . '-' . '001';
             }
-        }else{
+        } else {
             $new_code = date('dmY') . '-' . '001';
         }
 
@@ -429,7 +428,7 @@ class RestController extends Controller
             if (!$post['priority']) {
                 $respone[] = 'Không có dữ liệu độ ưu tiên (priority)';
             }
-          //  $this->db->begin();
+            //  $this->db->begin();
             if ($respone == null) {
                 $bill = new Bill();
                 $bill->setName($post['name']);
@@ -452,24 +451,23 @@ class RestController extends Controller
                             $timein_timeout->setQuantity(0);
                             $timein_timeout->setMajorId($i);
                             $timein_timeout->setParentId($parent_id);
-                            if($timein_timeout->create()){
+                            if ($timein_timeout->create()) {
 
-                            }else{
+                            } else {
                                 $respone = ['error' => 'Không tạo thời gian vào ra thành công'];
                                 break;
                             }
                             $parent_id = $timein_timeout->getId();
                         }
-                       //  $this->db->commit();
-                         $respone = $bill;
-                      //  $respone = ['success' => 'Tạo hóa đơn mói thành công'];
-                    }else{
+                        //  $this->db->commit();
+                        $respone = ['bill' => $bill];
+                        //  $respone = ['success' => 'Tạo hóa đơn mói thành công'];
+                    } else {
                         $respone = ['error' => 'Không chi tiết tạo hóa đơn thành công'];
                     }
 
 
-                }
-                else{
+                } else {
                     $respone = ['error' => 'Không tạo hóa đơn thành công'];
                 }
             }
