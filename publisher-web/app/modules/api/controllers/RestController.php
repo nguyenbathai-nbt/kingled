@@ -279,18 +279,24 @@ class RestController extends Controller
         $last_bill = Bill::findFirst([
             'order' => 'id DESC'
         ]);
-        $code = mb_split('-', $last_bill->getCode());
-        if ($code[0] == date('dmY')) {
-            $count = (int)$code[1] + 1;
-            if (strlen($count) == 1) {
-                $count = (string)'00' . (string)$count;
-            } else if (strlen($count) == 2) {
-                $count = (string)'0' . (string)$count;
+        if($last_bill)
+        {
+            $code = mb_split('-', $last_bill->getCode());
+            if ($code[0] == date('dmY')) {
+                $count = (int)$code[1] + 1;
+                if (strlen($count) == 1) {
+                    $count = (string)'00' . (string)$count;
+                } else if (strlen($count) == 2) {
+                    $count = (string)'0' . (string)$count;
+                }
+                $new_code = $code[0] . '-' . $count;
+            } else {
+                $new_code = date('dmY') . '-' . '001';
             }
-            $new_code = $code[0] . '-' . $count;
-        } else {
+        }else{
             $new_code = date('dmY') . '-' . '001';
         }
+
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
