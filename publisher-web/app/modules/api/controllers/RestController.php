@@ -403,61 +403,61 @@ class RestController extends Controller
         //  $array=json_encode($post);
         //  $post=json_decode($array,true);
 
-        if ($post) {
-            $respone = [];
-            if (!$post['name']) {
-                $respone[] = 'Không có dữ liệu tên hóa đơn (name)';
-            }
-            if (!$post['code']) {
-                $respone[] = 'Không có dữ liệu mã hóa đơn (code)';
-            }
-            if (!$post['quantity']) {
-                $respone[] = 'Không có dữ liệu số lượng sản phẩm (quantity)';
-            }
-            if (!$post['product_id']) {
-                $respone[] = 'Không có dữ liệu id sản phẩm (product_id)';
-            }
-            if (!$post['status_id']) {
-                $respone[] = 'Không có dữ liệu id trạng thái (status_id)';
-            }
-            if (!$post['priority']) {
-                $respone[] = 'Không có dữ liệu độ ưu tiên (priority)';
-            }
-            $this->db->begin();
-            if ($respone == null) {
-                $bill = new Bill();
-                $bill->setName($post['name']);
-                $bill->setCode($post['code']);
-                $bill->setStatusId($post['status_id']);
-                $bill->setPriority($post['priority']);
-                if ($bill->save()) {
-                    $bill_detail = new BillDetail();
-                    $bill_detail->setBillId($bill->getId());
-                    $bill_detail->setProductId($post['product_id']);
-                    $bill_detail->setQuantity($post['quantity']);
-                    $bill_detail->setDescription($post['description']);
-                    $bill_detail->setNote($post['note']);
-                    if ($bill_detail->save()) {
-                        $parent_id = null;
-                        for ($i = 1; $i <= 5; $i++) {
-                            $timein_timeout = new TimeinTimeout();
-                            $timein_timeout->setBillId($bill->getId());
-                            $timein_timeout->setProductId($bill_detail->getProductId());
-                            $timein_timeout->setQuantity(0);
-                            $timein_timeout->setMajorId($i);
-                            $timein_timeout->setParentId($parent_id);
-                            $timein_timeout->save();
-                            $parent_id = $timein_timeout->getId();
-                        }
-                         $this->db->commit();
-                    }
-                    $respone = $bill;
-                }
-            }
-
-        } else {
-            $respone = ['error' => 'Không nhận được dữ liệu'];
-        }
+//        if ($post) {
+//            $respone = [];
+//            if (!$post['name']) {
+//                $respone[] = 'Không có dữ liệu tên hóa đơn (name)';
+//            }
+//            if (!$post['code']) {
+//                $respone[] = 'Không có dữ liệu mã hóa đơn (code)';
+//            }
+//            if (!$post['quantity']) {
+//                $respone[] = 'Không có dữ liệu số lượng sản phẩm (quantity)';
+//            }
+//            if (!$post['product_id']) {
+//                $respone[] = 'Không có dữ liệu id sản phẩm (product_id)';
+//            }
+//            if (!$post['status_id']) {
+//                $respone[] = 'Không có dữ liệu id trạng thái (status_id)';
+//            }
+//            if (!$post['priority']) {
+//                $respone[] = 'Không có dữ liệu độ ưu tiên (priority)';
+//            }
+//            $this->db->begin();
+//            if ($respone == null) {
+//                $bill = new Bill();
+//                $bill->setName($post['name']);
+//                $bill->setCode($post['code']);
+//                $bill->setStatusId($post['status_id']);
+//                $bill->setPriority($post['priority']);
+//                if ($bill->save()) {
+//                    $bill_detail = new BillDetail();
+//                    $bill_detail->setBillId($bill->getId());
+//                    $bill_detail->setProductId($post['product_id']);
+//                    $bill_detail->setQuantity($post['quantity']);
+//                    $bill_detail->setDescription($post['description']);
+//                    $bill_detail->setNote($post['note']);
+//                    if ($bill_detail->save()) {
+//                        $parent_id = null;
+//                        for ($i = 1; $i <= 5; $i++) {
+//                            $timein_timeout = new TimeinTimeout();
+//                            $timein_timeout->setBillId($bill->getId());
+//                            $timein_timeout->setProductId($bill_detail->getProductId());
+//                            $timein_timeout->setQuantity(0);
+//                            $timein_timeout->setMajorId($i);
+//                            $timein_timeout->setParentId($parent_id);
+//                            $timein_timeout->save();
+//                            $parent_id = $timein_timeout->getId();
+//                        }
+//                         $this->db->commit();
+//                    }
+//                    $respone = $bill;
+//                }
+//            }
+//
+//        } else {
+//            $respone = ['error' => 'Không nhận được dữ liệu'];
+//        }
 
         switch ($format) {
             case 'json':
