@@ -463,7 +463,7 @@ class RestController extends Controller
             case 'json':
                 $contentType = 'application/json';
                 $encoding = 'UTF-8';
-                $content = json_encode($post);
+                $content = json_encode($respone);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
