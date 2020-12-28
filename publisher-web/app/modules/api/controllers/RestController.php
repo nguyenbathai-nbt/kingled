@@ -428,7 +428,7 @@ class RestController extends Controller
             if (!$post['priority']) {
                 $respone[] = 'Không có dữ liệu độ ưu tiên (priority)';
             }
-            //  $this->db->begin();
+              $this->db->begin();
             if ($respone == null) {
                 $bill = new Bill();
                 $bill->setName($post['name']);
@@ -459,13 +459,13 @@ class RestController extends Controller
                             }
                             $parent_id = $timein_timeout->getId();
                         }
-                        //  $this->db->commit();
-
+                          $this->db->commit();
+                        $respone = ['bill' => $bill];
+                        //  $respone = ['success' => 'Tạo hóa đơn mói thành công'];
                     } else {
                         $respone = ['error' => 'Không chi tiết tạo hóa đơn thành công'];
                     }
-                    $respone = ['bill' => $bill];
-                    //  $respone = ['success' => 'Tạo hóa đơn mói thành công'];
+
 
                 } else {
                     $respone = ['error' => 'Không tạo hóa đơn thành công'];
