@@ -451,7 +451,8 @@ class RestController extends Controller
                         }
                          $this->db->commit();
                     }
-                    $respone = $bill;
+                   // $respone = $bill;
+                    $respone = ['success' => 'Tạo hóa đơn mói thành công'];
                 }
             }
 
