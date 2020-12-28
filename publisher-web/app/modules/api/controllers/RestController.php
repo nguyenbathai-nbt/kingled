@@ -429,21 +429,21 @@ class RestController extends Controller
             if (!$post['priority']) {
                 $respone[] = 'Không có dữ liệu độ ưu tiên (priority)';
             }
-            $this->db->begin();
+          //  $this->db->begin();
             if ($respone == null) {
                 $bill = new Bill();
                 $bill->setName($post['name']);
                 $bill->setCode($post['code']);
                 $bill->setStatusId($post['status_id']);
                 $bill->setPriority($post['priority']);
-                if ($bill->save()) {
+                if ($bill->create()) {
                     $bill_detail = new BillDetail();
                     $bill_detail->setBillId($bill->getId());
                     $bill_detail->setProductId($post['product_id']);
                     $bill_detail->setQuantity($post['quantity']);
                     $bill_detail->setDescription($post['description']);
                     $bill_detail->setNote($post['note']);
-                    if ($bill_detail->save()) {
+                    if ($bill_detail->create()) {
                         $parent_id = null;
                         for ($i = 1; $i <= 5; $i++) {
                             $timein_timeout = new TimeinTimeout();
@@ -452,7 +452,7 @@ class RestController extends Controller
                             $timein_timeout->setQuantity(0);
                             $timein_timeout->setMajorId($i);
                             $timein_timeout->setParentId($parent_id);
-                            if($timein_timeout->save()){
+                            if($timein_timeout->create()){
 
                             }else{
                                 $respone = ['error' => 'Không tạo thời gian vào ra thành công'];
@@ -460,7 +460,7 @@ class RestController extends Controller
                             }
                             $parent_id = $timein_timeout->getId();
                         }
-                         $this->db->commit();
+                       //  $this->db->commit();
                         // $respone = $bill;
                         $respone = ['success' => 'Tạo hóa đơn mói thành công'];
                     }else{
