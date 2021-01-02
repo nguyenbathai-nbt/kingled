@@ -11,14 +11,9 @@ namespace Publisher\Modules\Api\Controllers;
 use Phalcon\Mvc\Controller;
 use Publisher\Common\Models\Bill\Bill;
 use Publisher\Common\Models\Bill\BillDetail;
-use Publisher\Common\Models\Bill\Conveyor;
-use Publisher\Common\Models\Bill\Product;
 use Publisher\Common\Models\Bill\TimeinTimeout;
-use Publisher\Common\Models\Users\Major;
-use Publisher\Common\Models\Users\Role;
 use Publisher\Common\Models\Users\Status;
 use Publisher\Common\Models\Users\Users;
-use Publisher\Common\Mvc\Auth;
 
 
 /**
@@ -187,7 +182,7 @@ class RestController extends Controller
                     'bill_id' => $bill_id,
                     'major_id' => $user->role->major->getId()
                 ],
-                'order'=>'major_id ASC'
+                'order' => 'major_id ASC'
             ]);
             $list_timein_timeout = [];
             foreach ($timein_timeout as $item) {
@@ -213,30 +208,40 @@ class RestController extends Controller
                 $list_timein_timeout[] = $items;
             }
         }
-        if($bill_detail->getConveyorId() ==null)
-        {
+        if ($bill_detail->getConveyorId() == null) {
             $list = [
                 'bill_detail' => $bill_detail,
-                'conveyor'=>'null',
+                'conveyor' => 'null',
                 'timein_timeout' => $list_timein_timeout
             ];
-        }else{
+        } else {
             $list = [
-                'bill_detail' => $bill_detail,
-                'conveyor'=>$bill_detail->conveyor,
+                'bill_detail' => [
+                    'id' => $bill_detail->getId(),
+                    'bill_id' => $bill_detail->getBillId(),
+                    'product_id' => $bill_detail->getproductId(),
+                    'quantity' => $bill_detail->getQuantity(),
+                    'description' => $bill_detail->getDescription(),
+                    'note' => $bill_detail->getNote(),
+                    'time_in' => $bill_detail->getTimeIn(),
+                    'time_out' => $bill_detail->getTimeOut(),
+                    'created_time' => $bill_detail->getCreatedTime(),
+                    'modified_time' => $bill_detail->getModifiedTime(),
+                    'conveyor' => $bill_detail->conveyor->getName(),
+                ],
                 'timein_timeout' => $list_timein_timeout
             ];
         }
 
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($list);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -249,7 +254,7 @@ class RestController extends Controller
     {
         $format = $this->request->getQuery('format', null, 'json');
         $list_bill = Bill::find([
-            'conditions' => 'status_id=:status_id:',
+            'conditions' => 'status_id =:status_id:',
             'bind' => [
                 'status_id' => $status_id
             ]
@@ -257,7 +262,7 @@ class RestController extends Controller
         $list = [];
         foreach ($list_bill as $item) {
             $bill_detail = BillDetail::findFirst([
-                'conditions' => 'bill_id=:bill_id:',
+                'conditions' => 'bill_id =:bill_id:',
                 'bind' => [
                     'bill_id' => $item->getId()
                 ]
@@ -271,13 +276,13 @@ class RestController extends Controller
         }
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($list);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -293,7 +298,7 @@ class RestController extends Controller
             'order' => 'id DESC'
         ]);
         if ($last_bill) {
-            $code = mb_split('-', $last_bill->getCode());
+            $code = mb_split(' - ', $last_bill->getCode());
             if ($code[0] == date('dmY')) {
                 $count = (int)$code[1] + 1;
                 if (strlen($count) == 1) {
@@ -301,23 +306,23 @@ class RestController extends Controller
                 } else if (strlen($count) == 2) {
                     $count = (string)'0' . (string)$count;
                 }
-                $new_code = $code[0] . '-' . $count;
+                $new_code = $code[0] . ' - ' . $count;
             } else {
-                $new_code = date('dmY') . '-' . '001';
+                $new_code = date('dmY') . ' - ' . '001';
             }
         } else {
-            $new_code = date('dmY') . '-' . '001';
+            $new_code = date('dmY') . ' - ' . '001';
         }
 
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($new_code);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -330,20 +335,20 @@ class RestController extends Controller
     {
         $format = $this->request->getQuery('format', null, 'json');
         $list_bill_detail = TimeinTimeout::find([
-            'conditions' => 'bill_id=:bill_id:',
+            'conditions' => 'bill_id =:bill_id:',
             'bind' => [
                 'bill_id' => $bill_id
             ]
         ]);
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($list_bill_detail);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -358,13 +363,13 @@ class RestController extends Controller
         $list_product = Product::find();
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($list_product);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -379,13 +384,13 @@ class RestController extends Controller
         $list_role = Role::find();
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($list_role);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -400,13 +405,13 @@ class RestController extends Controller
         $list_major = Major::find();
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($list_major);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -424,24 +429,24 @@ class RestController extends Controller
         if ($post) {
             $respone = [];
             if (!$post['name']) {
-                $respone[] = 'Không có dữ liệu tên hóa đơn (name)';
+                $respone[] = 'Không có dữ liệu tên hóa đơn(name)';
             }
             if (!$post['code']) {
-                $respone[] = 'Không có dữ liệu mã hóa đơn (code)';
+                $respone[] = 'Không có dữ liệu mã hóa đơn(code)';
             }
             if (!$post['quantity']) {
-                $respone[] = 'Không có dữ liệu số lượng sản phẩm (quantity)';
+                $respone[] = 'Không có dữ liệu số lượng sản phẩm(quantity)';
             }
             if (!$post['product_id']) {
-                $respone[] = 'Không có dữ liệu id sản phẩm (product_id)';
+                $respone[] = 'Không có dữ liệu id sản phẩm(product_id)';
             }
             if (!$post['status_id']) {
-                $respone[] = 'Không có dữ liệu id trạng thái (status_id)';
+                $respone[] = 'Không có dữ liệu id trạng thái(status_id)';
             }
             if (!$post['priority']) {
-                $respone[] = 'Không có dữ liệu độ ưu tiên (priority)';
+                $respone[] = 'Không có dữ liệu độ ưu tiên(priority)';
             }
-              $this->db->begin();
+            $this->db->begin();
             if ($respone == null) {
                 $bill = new Bill();
                 $bill->setName($post['name']);
@@ -472,7 +477,7 @@ class RestController extends Controller
                             }
                             $parent_id = $timein_timeout->getId();
                         }
-                          $this->db->commit();
+                        $this->db->commit();
                         $respone = ['bill' => $bill];
                         //  $respone = ['success' => 'Tạo hóa đơn mói thành công'];
                     } else {
@@ -491,13 +496,13 @@ class RestController extends Controller
 
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($respone);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -510,23 +515,23 @@ class RestController extends Controller
     {
         $format = $this->request->getQuery('format', null, 'json');
         $timeintimein = TimeinTimeout::findFirst([
-            'conditions' => 'id=:id:',
+            'conditions' => 'id =:id:',
             'bind' => [
                 'id' => $timeintimeout_id
             ]
         ]);
-        $timeintimein->setTimeIn(date('Y-m-d G:i:s'));
+        $timeintimein->setTimeIn(date('Y - m - d G:i:s'));
         $timeintimein->setUserTimeInId($user_id);
         $timeintimein->save();
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($timeintimein);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -539,24 +544,24 @@ class RestController extends Controller
     {
         $format = $this->request->getQuery('format', null, 'json');
         $timeintimeout = TimeinTimeout::findFirst([
-            'conditions' => 'id=:id:',
+            'conditions' => 'id =:id:',
             'bind' => [
                 'id' => $timeintimeout_id
             ]
         ]);
-        $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
+        $timeintimeout->setTimeOut(date('Y - m - d G:i:s'));
         $timeintimeout->setCountTime(strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
         $timeintimeout->setUserTimeOutId($user_id);
         $timeintimeout->save();
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($timeintimeout);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -570,7 +575,7 @@ class RestController extends Controller
         $format = $this->request->getQuery('format', null, 'json');
         $id = $id_timeintimeout;
         $timein_timeout = TimeinTimeout::findFirst([
-            'conditions' => 'id=:id:',
+            'conditions' => 'id =:id:',
             'bind' => [
                 'id' => $id
             ]
@@ -578,7 +583,7 @@ class RestController extends Controller
         $this->db->begin();
         if ($timein_timeout) {
             $bill_detail = BillDetail::findFirst([
-                'conditions' => 'bill_id=:bill_id:',
+                'conditions' => 'bill_id =:bill_id:',
                 'bind' => [
                     'bill_id' => $timein_timeout->getBillId()
                 ]
@@ -587,7 +592,7 @@ class RestController extends Controller
                 $bill_detail->setQuantity($quantity);
                 $bill_detail->update();
                 $time = TimeinTimeout::find([
-                    'conditions' => 'bill_id=:bill_id:',
+                    'conditions' => 'bill_id =:bill_id:',
                     'bind' => [
                         'bill_id' => $bill_detail->getBillId(),
                     ]
@@ -602,13 +607,13 @@ class RestController extends Controller
 
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($timein_timeout);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -622,7 +627,7 @@ class RestController extends Controller
         $format = $this->request->getQuery('format', null, 'json');
 
         $bill_detail = BillDetail::findFirst([
-            'conditions' => 'bill_id=:bill_id:',
+            'conditions' => 'bill_id =:bill_id:',
             'bind' => [
                 'bill_id' => $bill_id
             ]
@@ -636,13 +641,13 @@ class RestController extends Controller
 
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($bill_detail);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -657,13 +662,13 @@ class RestController extends Controller
         $conveyor = Conveyor::find();
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($conveyor);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -676,13 +681,13 @@ class RestController extends Controller
     {
         $format = $this->request->getQuery('format', null, 'json');
         $bill = Bill::findFirst([
-            'conditions' => 'id=:id:',
+            'conditions' => 'id =:id:',
             'bind' => [
                 'id' => $bill_id
             ]
         ]);
         if ($bill) {
-            $status = Status::findFirst(['conditions' => 'code=:code:', 'bind' => ['code' => 'DA_XONG']]);
+            $status = Status::findFirst(['conditions' => 'code =:code:', 'bind' => ['code' => 'DA_XONG']]);
             $bill->setStatusId($status->getId());
             $bill->save();
             $respone = ['success' => 'Đổi trạng thái thành công'];
@@ -691,13 +696,13 @@ class RestController extends Controller
         }
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($respone);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
@@ -722,7 +727,7 @@ class RestController extends Controller
             $check = $auth->check($credentials);
             if ($check == 'true') {
                 $user = Users::findFirst([
-                    'conditions' => 'username=:username:',
+                    'conditions' => 'username =:username:',
                     'bind' => [
                         'username' => $post['username']
                     ]
@@ -745,13 +750,13 @@ class RestController extends Controller
 
         switch ($format) {
             case 'json':
-                $contentType = 'application/json';
-                $encoding = 'UTF-8';
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
                 $content = json_encode($respone);
                 break;
             default:
                 throw new \Api\Exception\NotImplementedException(
-                    sprintf('Requested format %s is not supported yet.', $format)
+                    sprintf('Requested format % s is not supported yet . ', $format)
                 );
                 break;
         }
