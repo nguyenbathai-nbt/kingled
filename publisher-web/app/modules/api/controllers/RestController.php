@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: djavolak
- * Date: 10.9.16.
- * Time: 16.11
- */
 
 namespace Publisher\Modules\Api\Controllers;
 
@@ -213,8 +207,19 @@ class RestController extends Controller
         }
         if ($bill_detail->getConveyorId() == null) {
             $list = [
-                'bill_detail' => $bill_detail,
-                'conveyor' => 'null',
+                'bill_detail' => [
+                    'id' => $bill_detail->getId(),
+                    'bill_id' => $bill_detail->getBillId(),
+                    'product_id' => $bill_detail->getproductId(),
+                    'quantity' => $bill_detail->getQuantity(),
+                    'description' => $bill_detail->getDescription(),
+                    'note' => $bill_detail->getNote(),
+                    'time_in' => $bill_detail->getTimeIn(),
+                    'time_out' => $bill_detail->getTimeOut(),
+                    'created_time' => $bill_detail->getCreatedTime(),
+                    'modified_time' => $bill_detail->getModifiedTime(),
+                    'conveyor' => $bill_detail->getConveyorId()
+                ],
                 'timein_timeout' => $list_timein_timeout
             ];
         } else {
@@ -230,9 +235,8 @@ class RestController extends Controller
                     'time_out' => $bill_detail->getTimeOut(),
                     'created_time' => $bill_detail->getCreatedTime(),
                     'modified_time' => $bill_detail->getModifiedTime(),
-                    'conveyor' => $bill_detail->conveyor->getName(),
+                    'conveyor' => $bill_detail->conveyor,
                 ],
-                'conveyor'=>$bill_detail->conveyor,
                 'timein_timeout' => $list_timein_timeout
             ];
         }
