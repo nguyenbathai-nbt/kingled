@@ -67,7 +67,7 @@
                             <td>{{ item.major.getName() }}</td>
                             <td>{% if item.getTimeIn() is not null %}{{ item.getTimeIn() }}{% else %}
                                     <a class="btn btn-primary"
-                                       href="{{ url.get() }}bill/editTimeOut/{{ item.getId() }}"
+                                       href="{{ url.get() }}bill/editTimeIn/{{ item.getId() }}"
                                        title="{{ helper.translate('Cập nhật thời gian') }}"><i
                                                 class="glyphicon glyphicon-pencil"></i></a>
                                 {% endif %}</td>
@@ -76,7 +76,7 @@
 
                                     <td>{% if item.getTimeOut() is not null %}{{ item.getTimeOut() }}{% else %}
                                             <a class="btn btn-primary"
-                                               href="{{ url.get() }}bill/edit/{{ item.getId() }}"
+                                               href="{{ url.get() }}bill/editTimeOut/{{ item.getId() }}"
                                                title="{{ helper.translate('Cập nhật thời gian') }}"><i
                                                         class="glyphicon glyphicon-pencil"></i></a>
                                         {% endif %}
@@ -90,7 +90,7 @@
 
                                 <td>{% if item.getTimeOut() is not null %}{{ item.getTimeOut() }}{% else %}
                                         <a class="btn btn-primary"
-                                           href="{{ url.get() }}bill/edit/{{ item.getId() }}"
+                                           href="{{ url.get() }}bill/editTimeOut/{{ item.getId() }}"
                                            title="{{ helper.translate('Cập nhật thời gian') }}"><i
                                                     class="glyphicon glyphicon-pencil"></i></a>
                                     {% endif %}
@@ -100,7 +100,7 @@
 
                             <td> {% if item.getUserTimeinId() is not null %}{{ item.user_timein.getUsername() }}{% endif %} |
                                 {% if item.getUserTimeoutId() is not null %}{{ item.user_timeout.getUsername() }}{% endif %}</td>
-                            <td>{{ item.getCountTime() }}</td>
+                            <td>{{ helper.changeTimeSecondToMinute(item.getCountTime()) }}</td>
                             <td>{{ item.getDescription() }}</td>
                             <td>
                                 <a class="btn btn-primary"
@@ -127,7 +127,6 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('#btn_quantity').click(function () {
-                console.log('asdfasdfasf');
                 $.ajax({
                     type: 'Post',
                     url: "{{ url.get() }}bill/updateQuantity/{{ id_time.getId() }}",

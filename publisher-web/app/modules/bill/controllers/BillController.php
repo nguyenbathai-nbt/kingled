@@ -197,6 +197,7 @@ class BillController extends DashboardControllerBase
                 $form->bind($post, $bill_detail);
                 if($bill_detail->save())
                 {
+
                     $this->db->commit();
                 }
 
@@ -230,24 +231,26 @@ class BillController extends DashboardControllerBase
 
     }
 
-    public function editTimeIn($id_timein)
+    public function editTimeInAction($id_timein)
     {
         $this->view->disable();
-        $bill = Bill::findFirst([
+        $auth = $this->session->get('auth-identity');
+        $timein = TimeinTimeout::findFirst([
             'conditions' => 'id=:id:',
             'bind' => [
                 'id' => $id_timein
             ]
         ]);
-        if ($bill) {
-            $bill->setStatusId('2');
-            $bill->update();
+        if ($timein) {
+            $timein->setTimeIn(date('Y-m-d G:i:s'));
+            $timein->setUserTimeinId($auth['id']);
+            $timein->update();
 
-            $this->flashSession->success($this->helper->translate('Delete success'));
+            $this->flashSession->success($this->helper->translate('Cập nhật thành công'));
         } else {
-            $this->flashSession->warning($this->helper->translate('Not found user'));
+            $this->flashSession->warning($this->helper->translate('Không tìm thấy'));
         }
-        return $this->redirect('/bill');
+        return $this->redirect($_SERVER['HTTP_REFERER']);
     }
     public function editTimeOutAction($id_timeout)
     {
@@ -260,9 +263,9 @@ class BillController extends DashboardControllerBase
             ]
         ]);
         if ($timeout) {
-            $timeout->setTimeIn(date('Y-m-d G:i:s'));
-            $timeout->
-            $timeout->setUserTimeinId($auth['id']);
+            $timeout->setTimeOut(date('Y-m-d G:i:s'));
+            $timeout->setCountTime(strtotime($timeout->getTimeOut()) - strtotime($timeout->getTimeIn()));
+            $timeout->setUserTimeoutId($auth['id']);
             $timeout->update();
 
             $this->flashSession->success($this->helper->translate('Cập nhật thành công'));

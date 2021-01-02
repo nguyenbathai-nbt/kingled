@@ -67,5 +67,10 @@ class Helper extends Component
         return $this->admin_translate->query($string, $placeholders);
     }
 
+    public function changeTimeSecondToMinute($time)
+    {
+        return round((float) $time/60,2);
+    }
+
 
 }

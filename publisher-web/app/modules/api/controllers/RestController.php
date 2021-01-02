@@ -161,7 +161,7 @@ class RestController extends Controller
     protected function getBillDetailByBillId($user_id, $bill_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
-        $list_bill_detail = BillDetail::find([
+        $bill_detail = BillDetail::findFirst([
             'conditions' => 'bill_id=:bill_id:',
             'bind' => [
                 'bill_id' => $bill_id
@@ -186,7 +186,8 @@ class RestController extends Controller
                 'bind' => [
                     'bill_id' => $bill_id,
                     'major_id' => $user->role->major->getId()
-                ]
+                ],
+                'order'=>'major_id ASC'
             ]);
             $list_timein_timeout = [];
             foreach ($timein_timeout as $item) {
@@ -212,11 +213,21 @@ class RestController extends Controller
                 $list_timein_timeout[] = $items;
             }
         }
+        if($bill_detail->getConveyorId() ==null)
+        {
+            $list = [
+                'bill_detail' => $bill_detail,
+                'conveyor'=>'null',
+                'timein_timeout' => $list_timein_timeout
+            ];
+        }else{
+            $list = [
+                'bill_detail' => $bill_detail,
+                'conveyor'=>$bill_detail->conveyor,
+                'timein_timeout' => $list_timein_timeout
+            ];
+        }
 
-        $list = [
-            'bill_detail' => $list_bill_detail,
-            'timein_timeout' => $list_timein_timeout
-        ];
         switch ($format) {
             case 'json':
                 $contentType = 'application/json';
