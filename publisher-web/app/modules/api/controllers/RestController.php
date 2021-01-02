@@ -5,6 +5,7 @@ namespace Publisher\Modules\Api\Controllers;
 use Phalcon\Mvc\Controller;
 use Publisher\Common\Models\Bill\Bill;
 use Publisher\Common\Models\Bill\BillDetail;
+use Publisher\Common\Models\Bill\Conveyor;
 use Publisher\Common\Models\Bill\Product;
 use Publisher\Common\Models\Bill\TimeinTimeout;
 use Publisher\Common\Models\Users\Major;
