@@ -11,7 +11,10 @@ namespace Publisher\Modules\Api\Controllers;
 use Phalcon\Mvc\Controller;
 use Publisher\Common\Models\Bill\Bill;
 use Publisher\Common\Models\Bill\BillDetail;
+use Publisher\Common\Models\Bill\Product;
 use Publisher\Common\Models\Bill\TimeinTimeout;
+use Publisher\Common\Models\Users\Major;
+use Publisher\Common\Models\Users\Role;
 use Publisher\Common\Models\Users\Status;
 use Publisher\Common\Models\Users\Users;
 
@@ -229,6 +232,7 @@ class RestController extends Controller
                     'modified_time' => $bill_detail->getModifiedTime(),
                     'conveyor' => $bill_detail->conveyor->getName(),
                 ],
+                'conveyor'=>$bill_detail->conveyor,
                 'timein_timeout' => $list_timein_timeout
             ];
         }
