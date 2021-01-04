@@ -530,7 +530,7 @@ class RestController extends Controller
                 'id' => $timeintimeout_id
             ]
         ]);
-        $timeintimein->setTimeIn(date('Y - m - d G:i:s'));
+        $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
         $timeintimein->setUserTimeInId($user_id);
         $timeintimein->save();
         switch ($format) {
@@ -559,7 +559,7 @@ class RestController extends Controller
                 'id' => $timeintimeout_id
             ]
         ]);
-        $timeintimeout->setTimeOut(date('Y - m - d G:i:s'));
+        $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
         $timeintimeout->setCountTime(strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
         $timeintimeout->setUserTimeOutId($user_id);
         $timeintimeout->save();

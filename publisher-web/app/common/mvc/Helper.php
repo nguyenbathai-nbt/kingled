@@ -58,6 +58,10 @@ class Helper extends Component
         return Util::getInstance();
     }
 
+    public function import($file, $model, $fixData) {
+        return Import::getInstance($file, $model, $fixData);
+    }
+
     public function translate($string, $placeholders = null)
     {
 

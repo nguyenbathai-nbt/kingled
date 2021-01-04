@@ -2,11 +2,10 @@
 
 namespace Publisher\Modules\Product\Controllers;
 
-use Publisher\Common\Models\Badge\Badge;
 use Publisher\Common\Models\Badge\BadgeTemplate;
 use Publisher\Common\Models\Bill\Product;
-use Publisher\Common\Models\Users\Users;
 use Publisher\Common\Mvc\DashboardControllerBase;
+use Publisher\Modules\Product\Forms\ProductForm;
 
 class ProductController extends DashboardControllerBase
 {
@@ -32,8 +31,15 @@ class ProductController extends DashboardControllerBase
         $auth = $this->session->get('auth-identity');
         $current_page = $this->request->getQuery('page', 'int', 1);
         $this->view->activemenu = [
-            'bc',
-            'user_list'
+            'product',
+            'product_list'
+        ];
+        $this->view->names = [
+            [
+                'label' => 'Danh sách sản phẩm',
+                'href' => '/product'
+            ]
+
         ];
         $list_product = Product::find();
         $count_recipient = [];
@@ -52,79 +58,80 @@ class ProductController extends DashboardControllerBase
     public function createAction()
     {
         $this->view->activemenu = [
-            'bc',
-            'group_create'
+            'product',
+            'product_create'
         ];
         $this->view->names = [
             [
-                'label' => 'Create Group',
-                'href' => '/group/create'
+                'label' => 'Thêm mới sản phẩm',
+                'href' => '/product/create'
             ]
 
         ];
-        $form = new GroupForm();
-        $form->creategroup();
+        $form = new ProductForm();
+        $product = new Product();
+        $form->createproduct();
 
-        $group = new Group();
-        $badge_template = new BadgeTemplate();
-        $auth = $this->session->get('auth-identity');
-        $this->db->begin();
         if ($this->request->isPost()) {
             $post = $this->request->getPost();
-            $form->setEntity($post);
-            $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $image_type = $finfo->file($_FILES['import']['tmp_name']);
-            if (($image_type == "image/png" || $image_type == "image/svg+xml" || $image_type == "image/svg")) {
-                if ($_FILES['import']['size'] <= 20480) {
-                    move_uploaded_file($_FILES['import']['tmp_name'], BASE_PATH . "/data/upload-image/" . $_FILES['import']['name']);
-                    $form->bind($post, $group);
-                    $group->setId($group->getSequenceId());
-                    $group->setOwnerId($auth['id']);
-                    $group->setGroupEmail($auth['email']);
-                    $group->setGroupUrl($group->getDefaultUrl() . '_' . $group->getId());
-                    $group->setApiKey(' ');
-                    $group->setStatus('GR_ACTIVE');
-                    if (!$group->save()) {
-                        foreach ($group->getMessages() as $message) {
-                            $this->flashSession->error($this->helper->translate($message->getMessage()));
-                        }
-                        $form->setEntity($group);
-                    } else {
-                        $badge_template = new BadgeTemplate();
-                        $badge_template->setId($badge_template->getSequenceId());
-                        $badge_template->setGroupId($group->getId());
-                        $badge_template->setStatus('ACTIVE');
-
-                        $image_base = base64_encode(file_get_contents(BASE_PATH . "/data/upload-image/" . $_FILES['import']['name']));
-                        $badge_template->setImage($image_base);
-                        $badge_template->setImageType($image_type);
-                        if ($badge_template->save()) {
-                            $this->db->commit();
-                            return $this->redirect('/group');
-                        } else {
-                            $this->flashSession->error($this->helper->translate('Badgetemplate'));
-                            foreach ($badge_template->getMessages() as $message) {
-                                $this->flashSession->error($this->helper->translate($message->getMessage()));
-                            }
-
-
-                            $form->setEntity($group);
-                        }
-
-                    }
-                } else {
-                    $this->flashSession->error("Imported file has a file size in excess of 20Kb");
-                   // return $this->redirect('/group/create');
-                }
-
+            $this->db->begin();
+            $form->bind($post, $product);
+            if ($product->save()) {
+                $this->db->commit();
+                $this->flashSession->success($this->helper->translate('Thêm mới sản phẩm thành công'));
+                return $this->redirect('/product');
             } else {
-                $this->flashSession->error("The import file is not in the correct format .png and .svg");
-               // return $this->redirect('/group/create');
+                foreach ($product->getMessages() as $message) {
+                    $this->flashSession->error($this->helper->translate($message->getMessage()));
+                }
+                $form->setEntity($post);
+            }
+        }
+        $this->view->form = $form;
+
+    }
+
+    public function importProductAction()
+    {
+        $this->view->activemenu = [
+            'product',
+            'product_list   '
+        ];
+        $this->view->names = [
+            [
+                'label' => 'Thêm mới sản phẩm',
+                'href' => '/product/importproduct'
+            ]
+
+        ];
+        $form = new ProductForm();
+
+        $form->importproduct();
+
+        if ($this->request->isPost()) {
+            $post = $this->request->getPost();
+            $file = $_FILES['import']['tmp_name'];
+            $data_import = $this->helper->import($file, 'IMPORT_TRANSCRIPT', $post)->getData();
+            $this->db->begin();
+            $error = 0;
+            foreach ($data_import as $item) {
+                $product = new Product();
+                $product->setName($item['name']);
+                $product->setCode($item['code']);
+                $product->setDescription($item['description']);
+                if ($product->save()) {
+
+                } else {
+                    $error = 1;
+                    break;
+                }
+            }
+            if ($error == 0) {
+                $this->db->commit();
             }
 
         }
         $this->view->form = $form;
-
     }
 
     public function deleteAction($id)

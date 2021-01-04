@@ -23,7 +23,7 @@
         </div>
         <div class="box-footer">
             <div class="pull-right">
-                <a href="" class="btn btn-default"><i class="icon left arrow"></i> Go back</a>
+{#                <a href="" class="btn btn-default"><i class="icon left arrow"></i> Go back</a>#}
                 <input type="submit" class="btn btn-primary" value="Save"/>
             </div>
         </div>

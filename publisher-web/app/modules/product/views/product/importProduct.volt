@@ -7,9 +7,7 @@
         <div class="box-body">
             <div class="row">
                 <div class="col-md-6">
-                    {{ form.renderDecorated('name') }}
-                    {{ form.renderDecorated('code') }}
-                    {{ form.renderDecorated('description') }}
+                    {{ form.renderDecorated('import') }}
                 </div>
 
                 <div class="col-md-6">
@@ -20,7 +18,7 @@
         </div>
         <div class="box-footer">
             <div class="pull-right">
-
+{#                <a href="" class="btn btn-default"><i class="icon left arrow"></i> Go back</a>#}
                 <input type="submit" class="btn btn-primary" value="Save"/>
             </div>
         </div>

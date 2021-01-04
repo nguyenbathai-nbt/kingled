@@ -50,7 +50,7 @@ return new \Phalcon\Config([
         'iconCss' => 'fa fa-id-badge',
         'text' => 'Quản lý sản phẩm',
         'children' => [
-            'product' => [
+            'product_list' => [
                 'iconCss' => 'fa fa-clone',
                 'text' => 'Danh sách sản phẩm',
                 'href' => '/product'
@@ -60,12 +60,34 @@ return new \Phalcon\Config([
                 'text' => 'Tạo mới sản phẩm',
                 'href' => '/product/create'
             ],
+            'product_create_excel' => [
+                'iconCss' => 'fa fa-folder-o',
+                'text' => 'Tạo mới lô sản phẩm',
+                'href' => '/product/importproduct'
+            ],
         ]
     ],
     'producer' => [
         'active' => true,
         'iconCss' => 'fa fa-id-badge',
         'text' => 'Quản lý chuyền',
+        'children' => [
+            'product' => [
+                'iconCss' => 'fa fa-clone',
+                'text' => 'Danh sách chuyền',
+                'href' => '/producer'
+            ],
+            'product_create' => [
+                'iconCss' => 'fa fa-folder-o',
+                'text' => 'Tạo mới chuyền',
+                'href' => '/producer/create'
+            ],
+        ]
+    ],
+    'export' => [
+        'active' => true,
+        'iconCss' => 'fa fa-id-badge',
+        'text' => 'Quản lý báo cáo',
         'children' => [
             'product' => [
                 'iconCss' => 'fa fa-clone',
