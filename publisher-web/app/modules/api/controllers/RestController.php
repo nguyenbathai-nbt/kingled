@@ -12,6 +12,7 @@ use Publisher\Common\Models\Users\Major;
 use Publisher\Common\Models\Users\Role;
 use Publisher\Common\Models\Users\Status;
 use Publisher\Common\Models\Users\Users;
+use Publisher\Common\Mvc\Auth;
 
 
 /**
