@@ -207,7 +207,7 @@ class RestController extends Controller
                 $list_timein_timeout[] = $items;
             }
         }
-        if ($bill_detail->getConveyorId() == null) {
+        if ($bill_detail->getConveyorId() == '' || $bill_detail->getConveyorId() == 'null' || $bill_detail->getConveyorId() == null || empty($bill_detail->getConveyorId())) {
             $list = [
                 'bill_detail' => [
                     'id' => $bill_detail->getId(),
@@ -277,12 +277,45 @@ class RestController extends Controller
                     'bill_id' => $item->getId()
                 ]
             ]);
-            $list[] = [
-                'bill' => $item,
-                'bill_detail' => $bill_detail,
-                'product' => $bill_detail->product,
-                'status' => $item->status
-            ];
+            if ($bill_detail->getConveyorId() == '' || $bill_detail->getConveyorId() == 'null' || $bill_detail->getConveyorId() == null || empty($bill_detail->getConveyorId())) {
+                $list[] = [
+                    'bill' => $item,
+                    'bill_detail' => [
+                        'id' => $bill_detail->getId(),
+                        'bill_id' => $bill_detail->getBillId(),
+                        'product_id' => $bill_detail->getproductId(),
+                        'quantity' => $bill_detail->getQuantity(),
+                        'description' => $bill_detail->getDescription(),
+                        'note' => $bill_detail->getNote(),
+                        'time_in' => $bill_detail->getTimeIn(),
+                        'time_out' => $bill_detail->getTimeOut(),
+                        'created_time' => $bill_detail->getCreatedTime(),
+                        'modified_time' => $bill_detail->getModifiedTime(),
+                        'conveyor' => $bill_detail->getConveyorId()
+                    ],
+                    'product' => $bill_detail->product,
+                    'status' => $item->status
+                ];
+            } else {
+                $list[] = [
+                    'bill' => $item,
+                    'bill_detail' => [
+                        'id' => $bill_detail->getId(),
+                        'bill_id' => $bill_detail->getBillId(),
+                        'product_id' => $bill_detail->getproductId(),
+                        'quantity' => $bill_detail->getQuantity(),
+                        'description' => $bill_detail->getDescription(),
+                        'note' => $bill_detail->getNote(),
+                        'time_in' => $bill_detail->getTimeIn(),
+                        'time_out' => $bill_detail->getTimeOut(),
+                        'created_time' => $bill_detail->getCreatedTime(),
+                        'modified_time' => $bill_detail->getModifiedTime(),
+                        'conveyor' => $bill_detail->conveyor,
+                    ],
+                    'product' => $bill_detail->product,
+                    'status' => $item->status
+                ];
+            }
         }
         switch ($format) {
             case 'json':
