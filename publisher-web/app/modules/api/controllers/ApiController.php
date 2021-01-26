@@ -21,6 +21,7 @@ class ApiController extends RestController
         $this->getAllBill();
         die();
     }
+
     public function getAllUserAction()
     {
         $this->getAllUser();
@@ -44,7 +45,9 @@ class ApiController extends RestController
         $this->generateCodeBill();
         die();
     }
-    public function setBillClosedAction(){
+
+    public function setBillClosedAction()
+    {
         $this->setBillClosed($this->request->getQuery('bill_id'));
         die();
     }
@@ -76,7 +79,7 @@ class ApiController extends RestController
     public function createBillAction()
     {
         if ($this->request->isPost()) {
-           // $this->createBill($this->request->getJsonRawBody());
+            // $this->createBill($this->request->getJsonRawBody());
             $this->createBill($this->request->getPost());
         } else {
             $this->renderLog('Không tìm thấy phương thúc này');
@@ -126,6 +129,24 @@ class ApiController extends RestController
         } else {
             $this->renderLog('Không tìm thấy phương thúc này');
         }
+        die();
+    }
+
+    public function delayBillAction()
+    {
+        $this->delayBill($this->request->getQuery('bill_id'));
+        die();
+    }
+
+    public function checkDelayBillAction()
+    {
+        $this->checkDelayBill($this->request->getQuery('bill_id'));
+        die();
+    }
+
+    public function turnOffDelayBillAction()
+    {
+        $this->turnOffDelayBill($this->request->getQuery('bill_id'));
         die();
     }
 

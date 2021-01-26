@@ -102,24 +102,31 @@ class BillController extends DashboardControllerBase
         $this->view->form = $form;
 
     }
+
     public function generateCode()
     {
         $last_bill = Bill::findFirst([
-            'order'=>'id DESC'
+            'conditions' => 'code LIKE :code:',
+            'bind' => [
+                'code' => '%' . date('dmY') . '%'
+            ],
+            'order' => 'id DESC'
         ]);
-        $code =mb_split('-',$last_bill->getCode());
-        if($code[0]==date('dmY'))
-        {
-            $count=(int)$code[1]+1;
-            if(strlen($count)==1)
-            {
-                $count=(string)'00'. (string)$count;
-            }else if (strlen($count)==2){
-                $count=(string)'0'. (string)$count;
+        if ($last_bill) {
+            $code = mb_split('-', $last_bill->getCode());
+            if ($code[0] == date('dmY')) {
+                $count = (int)$code[1] + 1;
+                if (strlen($count) == 1) {
+                    $count = (string)'00' . (string)$count;
+                } else if (strlen($count) == 2) {
+                    $count = (string)'0' . (string)$count;
+                }
+                $new_code = $code[0] . '-' . $count;
+            } else {
+                $new_code = date('dmY') . '-' . '001';
             }
-            $new_code= $code[0].'-'.$count;
-        }else{
-            $new_code=date('dmY').'-'.'001';
+        } else {
+            $new_code = date('dmY') . ' - ' . '001';
         }
         return $new_code;
     }
@@ -172,12 +179,12 @@ class BillController extends DashboardControllerBase
                 'bill_id' => $id
             ]
         ]);
-        $timein_timeout= TimeinTimeout::find([
-            'conditions'=>'bill_id=:bill_id:',
-            'bind'=>[
-                'bill_id'=>$id
+        $timein_timeout = TimeinTimeout::find([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $id
             ],
-            'order'=>'major_id ASC'
+            'order' => 'major_id ASC'
         ]);
 
         $auth = $this->session->get('auth-identity');
@@ -195,8 +202,7 @@ class BillController extends DashboardControllerBase
                 $form->setEntity($bill);
             } else {
                 $form->bind($post, $bill_detail);
-                if($bill_detail->save())
-                {
+                if ($bill_detail->save()) {
 
                     $this->db->commit();
                 }
@@ -210,48 +216,64 @@ class BillController extends DashboardControllerBase
             Tag::setDefaults([
                 'name' => $bill->getName(),
                 'code' => $bill->getCode(),
-                'quantity'=>$bill_detail->getQuantity(),
-                'product_id'=>$bill_detail->getProductId(),
-                'note'=>$bill_detail->getNote(),
-                'description'=>$bill_detail->getDescription(),
-                'conveyor_id'=>$bill_detail->getConveyorId()
+                'quantity' => $bill_detail->getQuantity(),
+                'product_id' => $bill_detail->getProductId(),
+                'note' => $bill_detail->getNote(),
+                'description' => $bill_detail->getDescription(),
+                'conveyor_id' => $bill_detail->getConveyorId()
             ]);
             $form->setEntity($bill);
-            $this->view->bills=$bill;
-            $this->view->timeintimeout=$timein_timeout;
+            $this->view->bills = $bill;
+            $this->view->timeintimeout = $timein_timeout;
         }
-        $this->view->id_time= TimeinTimeout::findFirst([
-            'conditions'=>'major_id=:major_id: and bill_id=:bill_id:',
-            'bind'=>[
-                'major_id'=>1,
-                'bill_id'=>$id
+        $this->view->id_time = TimeinTimeout::findFirst([
+            'conditions' => 'major_id=:major_id: and bill_id=:bill_id:',
+            'bind' => [
+                'major_id' => 1,
+                'bill_id' => $id
             ]
         ]);
         $this->view->form = $form;
 
     }
 
-    public function editTimeInAction($id_timein)
+    public function editTimeInAction($timeintimeout_id)
     {
         $this->view->disable();
         $auth = $this->session->get('auth-identity');
-        $timein = TimeinTimeout::findFirst([
-            'conditions' => 'id=:id:',
+        $timeintimein = TimeinTimeout::findFirst([
+            'conditions' => 'id =:id:',
             'bind' => [
-                'id' => $id_timein
+                'id' => $timeintimeout_id
             ]
         ]);
-        if ($timein) {
-            $timein->setTimeIn(date('Y-m-d G:i:s'));
-            $timein->setUserTimeinId($auth['id']);
-            $timein->update();
+        if ($timeintimein) {
+            if ($timeintimein->getMajorId() == 1) {
 
-            $this->flashSession->success($this->helper->translate('Cập nhật thành công'));
+            } else {
+                $befor_timein = TimeinTimeout::findFirst([
+                    'conditions' => 'id=:id:',
+                    'bind' => [
+                        'id' => $timeintimein->getParentId()
+                    ]
+                ]);
+                if ($befor_timein->getTimeOut() == null || empty($befor_timein->getTimeOut()) || $befor_timein->getTimeOut() == 'null') {
+                    $this->flashSession->warning($this->helper->translate('Nghiệp vụ trước chưa cập nhật thời gian đóng. Vui lòng cập nhật thời gian'));
+                } else {
+                    $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
+                    $timeintimein->setUserTimeInId($auth['id']);
+                    $timeintimein->save();
+                    $this->flashSession->success($this->helper->translate('Cập nhật thành công'));
+
+                }
+            }
         } else {
             $this->flashSession->warning($this->helper->translate('Không tìm thấy'));
+
         }
         return $this->redirect($_SERVER['HTTP_REFERER']);
     }
+
     public function editTimeOutAction($id_timeout)
     {
         $this->view->disable();
@@ -288,24 +310,22 @@ class BillController extends DashboardControllerBase
         $this->db->begin();
         if ($timein_timeout) {
             $timein_timeout->setQuantity($quantity);
-            $bill_detail= BillDetail::findFirst([
-                'conditions'=>'bill_id=:bill_id:',
-                'bind'=>[
-                    'bill_id'=>$timein_timeout->getBillId()
+            $bill_detail = BillDetail::findFirst([
+                'conditions' => 'bill_id=:bill_id:',
+                'bind' => [
+                    'bill_id' => $timein_timeout->getBillId()
                 ]
             ]);
-            if($bill_detail)
-            {
+            if ($bill_detail) {
                 $bill_detail->setQuantity($quantity);
                 $bill_detail->update();
-                $time= TimeinTimeout::find([
-                    'conditions'=>'bill_id=:bill_id:',
-                    'bind'=>[
-                        'bill_id'=>$bill_detail->getBillId(),
+                $time = TimeinTimeout::find([
+                    'conditions' => 'bill_id=:bill_id:',
+                    'bind' => [
+                        'bill_id' => $bill_detail->getBillId(),
                     ]
                 ]);
-                foreach ($time as $item)
-                {
+                foreach ($time as $item) {
                     $item->setQuantity($quantity);
                     $item->update();
                 }
@@ -318,6 +338,7 @@ class BillController extends DashboardControllerBase
         }
         return $this->redirect($_SERVER['HTTP_REFERER']);
     }
+
 
 }
 

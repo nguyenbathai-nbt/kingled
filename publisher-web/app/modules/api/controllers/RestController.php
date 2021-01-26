@@ -183,6 +183,7 @@ class RestController extends Controller
                 ],
                 'order' => 'major_id ASC'
             ]);
+        }
             $list_timein_timeout = [];
             foreach ($timein_timeout as $item) {
                 $items = [
@@ -206,7 +207,6 @@ class RestController extends Controller
                 ];
                 $list_timein_timeout[] = $items;
             }
-        }
         if ($bill_detail->getConveyorId() == '' || $bill_detail->getConveyorId() == 'null' || $bill_detail->getConveyorId() == null || empty($bill_detail->getConveyorId())) {
             $list = [
                 'bill_detail' => [
@@ -338,6 +338,10 @@ class RestController extends Controller
     {
         $format = $this->request->getQuery('format', null, 'json');
         $last_bill = Bill::findFirst([
+            'conditions' => 'code LIKE :code:',
+            'bind' => [
+                'code' => '%' . date('dmY') . '%'
+            ],
             'order' => 'id DESC'
         ]);
         if ($last_bill) {
@@ -563,9 +567,44 @@ class RestController extends Controller
                 'id' => $timeintimeout_id
             ]
         ]);
-        $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
-        $timeintimein->setUserTimeInId($user_id);
-        $timeintimein->save();
+        if ($timeintimein) {
+            if ($timeintimein->getDelayStatus() == 1) {
+                $timeintimein = [
+                    'error' => 'Hóa đơn đang trạng thái trì hoãn'
+                ];
+            } else {
+                if ($timeintimein->getMajorId() == 1) {
+
+                } else {
+                    $befor_timein = TimeinTimeout::findFirst([
+                        'conditions' => 'id=:id:',
+                        'bind' => [
+                            'id' => $timeintimein->getParentId()
+                        ]
+                    ]);
+                    if ($befor_timein->getTimeOut() == null || empty($befor_timein->getTimeOut()) || $befor_timein->getTimeOut() == 'null') {
+                        $timeintimein = [
+                            'error' => 'Nghiệp vụ trước chưa cập nhật thời gian đóng. Vui lòng cập nhật thời gian'
+                        ];
+                    } else {
+                        if ($timeintimein->getTimeIn() != null || !empty($timeintimein->getTimeIn()) || $timeintimein->getTimeIn() != 'null') {
+                            $timeintimein = [
+                                'warning' => 'Thời gian vào đã được cập nhật từ trước'
+                            ];
+                        } else {
+                            $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
+                            $timeintimein->setUserTimeInId($user_id);
+                            $timeintimein->save();
+                        }
+
+                    }
+                }
+            }
+        } else {
+            $timeintimein = [
+                'error' => 'Không tìm thấy bản ghi'
+            ];
+        }
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
@@ -592,10 +631,34 @@ class RestController extends Controller
                 'id' => $timeintimeout_id
             ]
         ]);
-        $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
-        $timeintimeout->setCountTime(strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
-        $timeintimeout->setUserTimeOutId($user_id);
-        $timeintimeout->save();
+        if ($timeintimeout) {
+            if ($timeintimeout->getDelayStatus() == 1) {
+                $timeintimeout = [
+                    'error' => 'Hóa đơn đang trạng thái trì hoãn'
+                ];
+            } else {
+                if ($timeintimeout->getTimeIn() == null || empty($timeintimeout->getTimeIn()) || $timeintimeout->getTimeIn() == 'null') {
+                    $timeintimeout = [
+                        'error' => 'Chưa cập nhật thời gian vào. Vui lòng cập nhật thời gian vào trước'
+                    ];
+                } else {
+                    if ($timeintimeout->getTimeOut() != null || !empty($timeintimeout->getTimeOut()) || $timeintimeout->getTimeOut() != 'null') {
+                        $timeintimeout = [
+                            'warning' => 'Thời gian vào đã được cập nhật từ trước'
+                        ];
+                    } else {
+                        $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
+                        $timeintimeout->setCountTime($timeintimeout->getCountTime() + strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
+                        $timeintimeout->setUserTimeOutId($user_id);
+                        $timeintimeout->save();
+                    }
+                }
+            }
+        } else {
+            $timeintimeout = [
+                'error' => 'Không tìm thấy bản ghi'
+            ];
+        }
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
@@ -608,7 +671,7 @@ class RestController extends Controller
                 );
                 break;
         }
-        $this->response->setContentType($contentType, $encoding);
+        //  $this->response->setContentType($contentType, $encoding);
         $this->response->setContent($content);
         return $this->response->send();
     }
@@ -756,7 +819,6 @@ class RestController extends Controller
 
     protected function login($post)
     {
-
         $format = $this->request->getQuery('format', null, 'json');
         //  $array=json_encode($post);
         //  $post=json_decode($array,true);
@@ -790,6 +852,140 @@ class RestController extends Controller
         } else {
             $respone = ['error' => 'Không nhận được dữ liệu'];
         }
+
+        switch ($format) {
+            case 'json':
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
+                $content = json_encode($respone);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format % s is not supported yet . ', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+
+    protected function delayBill($bill_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $timeintimeout = TimeinTimeout::find([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $bill_id
+            ]
+        ]);
+        if ($timeintimeout) {
+            foreach ($timeintimeout as $item) {
+                if ($item->getTimeIn() != null && $item->getTimeOut() != null) {
+
+                } else if ($item->getTimeIn() != null && $item->getTimeOut() == null) {
+                    $item->setCountTime($item->getCountTime() + strtotime(date('Y-m-d H:i:s')) - strtotime($item->getTimeIn()));
+
+                }
+                $item->setDelayStatus('1');
+                $item->update();
+
+            }
+            $respone = [
+                'success' => 'Trì hoãn hóa đơn thành công'
+            ];
+        } else {
+            $respone = [
+                'error' => 'Không tìm thấy bản ghi'
+            ];
+        }
+
+
+        switch ($format) {
+            case 'json':
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
+                $content = json_encode($respone);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format % s is not supported yet . ', $format)
+                );
+                break;
+        }
+        // $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+
+    protected function turnOffDelayBill($bill_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $timeintimeout = TimeinTimeout::find([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $bill_id
+            ]
+        ]);
+        if ($timeintimeout) {
+            foreach ($timeintimeout as $item) {
+                if ($item->getTimeIn() != null && $item->getTimeOut() != null) {
+
+                } else if ($item->getTimeIn() != null && $item->getTimeOut() == null) {
+                    $item->setTimeIn(date('Y-m-d H:i:s'));
+                }
+                $item->setDelayStatus(null);
+                $item->update();
+            }
+        } else {
+            $respone = [
+                'error' => 'Không tìm thấy bản ghi'
+            ];
+        }
+
+
+        switch ($format) {
+            case 'json':
+                $contentType = 'application / json';
+                $encoding = 'UTF - 8';
+                $content = json_encode($respone);
+                break;
+            default:
+                throw new \Api\Exception\NotImplementedException(
+                    sprintf('Requested format % s is not supported yet . ', $format)
+                );
+                break;
+        }
+        $this->response->setContentType($contentType, $encoding);
+        $this->response->setContent($content);
+        return $this->response->send();
+    }
+
+    protected function checkDelayBill($bill_id)
+    {
+        $format = $this->request->getQuery('format', null, 'json');
+        $timeintimeout = TimeinTimeout::findFirst([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $bill_id
+            ]
+        ]);
+        if ($timeintimeout) {
+            if ($timeintimeout->getDelayStatus() == 1) {
+                $respone = [
+                    'delay' => 'Hóa đơn đang trong trạng thái trì hoãn'
+                ];
+            } else {
+                $respone = [
+                    'nodelay' => 'Hóa đơn không trong trạng thái trì hoãn'
+                ];
+            }
+        } else {
+            $respone = [
+                'error' => 'Không tìm thấy bản ghi'
+            ];
+        }
+
 
         switch ($format) {
             case 'json':
