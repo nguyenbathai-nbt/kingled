@@ -870,7 +870,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($respone);
                 break;
             default:
