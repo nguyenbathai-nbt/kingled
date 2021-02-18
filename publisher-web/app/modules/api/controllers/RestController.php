@@ -768,11 +768,15 @@ class RestController extends Controller
                 'bill_id' => $bill_id
             ]
         ]);
-        $this->db->begin();
+
         if ($bill_detail) {
             $bill_detail->setConveyorId($conveyor_id);
             $bill_detail->save();
-            $this->db->commit();
+
+        }else{
+            $bill_detail=[
+                'error'=>'Không tìm thấy hóa đơn'
+            ];
         }
 
         switch ($format) {
