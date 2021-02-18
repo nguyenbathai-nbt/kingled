@@ -157,6 +157,7 @@ class Bill extends Model
 
     public function beforeValidationOnCreate()
     {
+       // $this->id= $this->getSequenceId();
         $this->modified_time = date('Y-m-d G:i:s');
         $this->created_time = date('Y-m-d G:i:s');
 

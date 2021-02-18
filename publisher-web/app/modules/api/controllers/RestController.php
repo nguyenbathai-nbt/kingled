@@ -625,40 +625,54 @@ class RestController extends Controller
     protected function updateTimeOut($user_id, $timeintimeout_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
-        $timeintimeout = TimeinTimeout::findFirst([
+        $timeintimein = TimeinTimeout::findFirst([
             'conditions' => 'id =:id:',
             'bind' => [
                 'id' => $timeintimeout_id
             ]
         ]);
-        if ($timeintimeout) {
-            if ($timeintimeout->getDelayStatus() == 1) {
-                $timeintimeout = [
-                    'error' => 'Hóa đơn đang trạng thái trì hoãn'
-                ];
-            } else {
-                if ($timeintimeout->getTimeIn() == null || empty($timeintimeout->getTimeIn()) || $timeintimeout->getTimeIn() == 'null') {
+        if($timeintimein->getTimeIn() == null && $timeintimein->getUserTimeInId() == null)
+        {
+            $timeintimeout = [
+                'error' => 'Cập nhật thời gian vào trước'
+            ];
+        }else{
+            $timeintimeout = TimeinTimeout::findFirst([
+                'conditions' => 'id =:id:',
+                'bind' => [
+                    'id' => $timeintimeout_id
+                ]
+            ]);
+            if ($timeintimeout) {
+                if ($timeintimeout->getDelayStatus() == 1) {
                     $timeintimeout = [
-                        'error' => 'Chưa cập nhật thời gian vào. Vui lòng cập nhật thời gian vào trước'
+                        'error' => 'Hóa đơn đang trạng thái trì hoãn'
                     ];
                 } else {
-                    if ($timeintimeout->getTimeOut() != null || !empty($timeintimeout->getTimeOut()) || $timeintimeout->getTimeOut() != 'null') {
+                    if ($timeintimeout->getTimeIn() == null || empty($timeintimeout->getTimeIn()) || $timeintimeout->getTimeIn() == 'null') {
                         $timeintimeout = [
-                            'warning' => 'Thời gian vào đã được cập nhật từ trước'
+                            'error' => 'Chưa cập nhật thời gian vào. Vui lòng cập nhật thời gian vào trước'
                         ];
                     } else {
-                        $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
-                        $timeintimeout->setCountTime($timeintimeout->getCountTime() + strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
-                        $timeintimeout->setUserTimeOutId($user_id);
-                        $timeintimeout->save();
+                        if ($timeintimeout->getTimeOut() != null || !empty($timeintimeout->getTimeOut()) || $timeintimeout->getTimeOut() != 'null') {
+                            $timeintimeout = [
+                                'warning' => 'Thời gian vào đã được cập nhật từ trước'
+                            ];
+                        } else {
+                            $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
+                            $timeintimeout->setCountTime($timeintimeout->getCountTime() + strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
+                            $timeintimeout->setUserTimeOutId($user_id);
+                            $timeintimeout->save();
+                        }
                     }
                 }
+            } else {
+                $timeintimeout = [
+                    'error' => 'Không tìm thấy bản ghi'
+                ];
             }
-        } else {
-            $timeintimeout = [
-                'error' => 'Không tìm thấy bản ghi'
-            ];
         }
+
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';

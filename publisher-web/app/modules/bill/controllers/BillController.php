@@ -35,7 +35,7 @@ class BillController extends DashboardControllerBase
         $current_page = $this->request->getQuery('page', 'int', 1);
         $limit_of_page = 10;
         $list_bill = BillDetail::find([
-            'limit' => $this->limit_of_page,
+            'limit' => $limit_of_page,
             'offset' => (($current_page - 1) * $limit_of_page),
             'order' => 'id ASC'
         ]);
@@ -90,7 +90,10 @@ class BillController extends DashboardControllerBase
                 return $this->redirect('/bill');
 
             } else {
-
+                foreach ($bill->getMessages() as $message) {
+                    $this->flashSession->error($this->helper->translate($message['_message']));
+                }
+                $form->setEntity($bill);
             }
 
         } else {
@@ -249,7 +252,10 @@ class BillController extends DashboardControllerBase
         ]);
         if ($timeintimein) {
             if ($timeintimein->getMajorId() == 1) {
-
+                $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
+                $timeintimein->setUserTimeInId($auth['id']);
+                $timeintimein->save();
+                $this->flashSession->success($this->helper->translate('Cập nhật thành công'));
             } else {
                 $befor_timein = TimeinTimeout::findFirst([
                     'conditions' => 'id=:id:',
@@ -278,22 +284,34 @@ class BillController extends DashboardControllerBase
     {
         $this->view->disable();
         $auth = $this->session->get('auth-identity');
-        $timeout = TimeinTimeout::findFirst([
-            'conditions' => 'id=:id:',
+        $timeintimein = TimeinTimeout::findFirst([
+            'conditions' => 'id =:id:',
             'bind' => [
                 'id' => $id_timeout
             ]
         ]);
-        if ($timeout) {
-            $timeout->setTimeOut(date('Y-m-d G:i:s'));
-            $timeout->setCountTime(strtotime($timeout->getTimeOut()) - strtotime($timeout->getTimeIn()));
-            $timeout->setUserTimeoutId($auth['id']);
-            $timeout->update();
+        if($timeintimein->getTimeIn() == null && $timeintimein->getUserTimeInId() == null)
+        {
+            $this->flashSession->warning($this->helper->translate('Cập nhật thời gian vào trước'));
+        }else{
+            $timeout = TimeinTimeout::findFirst([
+                'conditions' => 'id=:id:',
+                'bind' => [
+                    'id' => $id_timeout
+                ]
+            ]);
+            if ($timeout) {
+                $timeout->setTimeOut(date('Y-m-d G:i:s'));
+                $timeout->setCountTime(strtotime($timeout->getTimeOut()) - strtotime($timeout->getTimeIn()));
+                $timeout->setUserTimeoutId($auth['id']);
+                $timeout->update();
 
-            $this->flashSession->success($this->helper->translate('Cập nhật thành công'));
-        } else {
-            $this->flashSession->warning($this->helper->translate('Không tìm thấy'));
+                $this->flashSession->success($this->helper->translate('Cập nhật thành công'));
+            } else {
+                $this->flashSession->warning($this->helper->translate('Không tìm thấy'));
+            }
         }
+
         return $this->redirect($_SERVER['HTTP_REFERER']);
     }
 
