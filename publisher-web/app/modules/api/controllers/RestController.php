@@ -161,29 +161,35 @@ class RestController extends Controller
                 'bill_id' => $bill_id
             ]
         ]);
-        $user = Users::findFirst([
-            'conditions' => 'id=:id:',
-            'bind' => [
-                'id' => $user_id
-            ]
-        ]);
-        if ($user->role->getMajorId() == 6) {
-            $timein_timeout = TimeinTimeout::find([
-                'conditions' => 'bill_id=:bill_id:',
+        if(!$bill_detail)
+        {
+            $list = [
+                'error' => 'Không tìm thấy hóa đơn'
+            ];
+        }else{
+            $user = Users::findFirst([
+                'conditions' => 'id=:id:',
                 'bind' => [
-                    'bill_id' => $bill_id,
+                    'id' => $user_id
                 ]
             ]);
-        } else {
-            $timein_timeout = TimeinTimeout::find([
-                'conditions' => 'bill_id=:bill_id: and major_id <= :major_id:',
-                'bind' => [
-                    'bill_id' => $bill_id,
-                    'major_id' => $user->role->major->getId()
-                ],
-                'order' => 'major_id ASC'
-            ]);
-        }
+            if ($user->role->getMajorId() == 6) {
+                $timein_timeout = TimeinTimeout::find([
+                    'conditions' => 'bill_id=:bill_id:',
+                    'bind' => [
+                        'bill_id' => $bill_id,
+                    ]
+                ]);
+            } else {
+                $timein_timeout = TimeinTimeout::find([
+                    'conditions' => 'bill_id=:bill_id: and major_id <= :major_id:',
+                    'bind' => [
+                        'bill_id' => $bill_id,
+                        'major_id' => $user->role->major->getId()
+                    ],
+                    'order' => 'major_id ASC'
+                ]);
+            }
             $list_timein_timeout = [];
             foreach ($timein_timeout as $item) {
                 $items = [
@@ -207,46 +213,48 @@ class RestController extends Controller
                 ];
                 $list_timein_timeout[] = $items;
             }
-        if ($bill_detail->getConveyorId() == '' || $bill_detail->getConveyorId() == 'null' || $bill_detail->getConveyorId() == null || empty($bill_detail->getConveyorId())) {
-            $list = [
-                'bill_detail' => [
-                    'id' => $bill_detail->getId(),
-                    'bill_id' => $bill_detail->getBillId(),
-                    'product_id' => $bill_detail->getproductId(),
-                    'quantity' => $bill_detail->getQuantity(),
-                    'description' => $bill_detail->getDescription(),
-                    'note' => $bill_detail->getNote(),
-                    'time_in' => $bill_detail->getTimeIn(),
-                    'time_out' => $bill_detail->getTimeOut(),
-                    'created_time' => $bill_detail->getCreatedTime(),
-                    'modified_time' => $bill_detail->getModifiedTime(),
-                    'conveyor' => $bill_detail->getConveyorId()
-                ],
-                'timein_timeout' => $list_timein_timeout
-            ];
-        } else {
-            $list = [
-                'bill_detail' => [
-                    'id' => $bill_detail->getId(),
-                    'bill_id' => $bill_detail->getBillId(),
-                    'product_id' => $bill_detail->getproductId(),
-                    'quantity' => $bill_detail->getQuantity(),
-                    'description' => $bill_detail->getDescription(),
-                    'note' => $bill_detail->getNote(),
-                    'time_in' => $bill_detail->getTimeIn(),
-                    'time_out' => $bill_detail->getTimeOut(),
-                    'created_time' => $bill_detail->getCreatedTime(),
-                    'modified_time' => $bill_detail->getModifiedTime(),
-                    'conveyor' => $bill_detail->conveyor,
-                ],
-                'timein_timeout' => $list_timein_timeout
-            ];
+            if ($bill_detail->getConveyorId() == '' || $bill_detail->getConveyorId() == 'null' || $bill_detail->getConveyorId() == null || empty($bill_detail->getConveyorId())) {
+                $list = [
+                    'bill_detail' => [
+                        'id' => $bill_detail->getId(),
+                        'bill_id' => $bill_detail->getBillId(),
+                        'product_id' => $bill_detail->getproductId(),
+                        'quantity' => $bill_detail->getQuantity(),
+                        'description' => $bill_detail->getDescription(),
+                        'note' => $bill_detail->getNote(),
+                        'time_in' => $bill_detail->getTimeIn(),
+                        'time_out' => $bill_detail->getTimeOut(),
+                        'created_time' => $bill_detail->getCreatedTime(),
+                        'modified_time' => $bill_detail->getModifiedTime(),
+                        'conveyor' => $bill_detail->getConveyorId()
+                    ],
+                    'timein_timeout' => $list_timein_timeout
+                ];
+            } else {
+                $list = [
+                    'bill_detail' => [
+                        'id' => $bill_detail->getId(),
+                        'bill_id' => $bill_detail->getBillId(),
+                        'product_id' => $bill_detail->getproductId(),
+                        'quantity' => $bill_detail->getQuantity(),
+                        'description' => $bill_detail->getDescription(),
+                        'note' => $bill_detail->getNote(),
+                        'time_in' => $bill_detail->getTimeIn(),
+                        'time_out' => $bill_detail->getTimeOut(),
+                        'created_time' => $bill_detail->getCreatedTime(),
+                        'modified_time' => $bill_detail->getModifiedTime(),
+                        'conveyor' => $bill_detail->conveyor,
+                    ],
+                    'timein_timeout' => $list_timein_timeout
+                ];
+            }
         }
+
 
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($list);
                 break;
             default:
@@ -320,7 +328,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($list);
                 break;
             default:
@@ -364,7 +372,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($new_code);
                 break;
             default:
@@ -390,7 +398,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($list_bill_detail);
                 break;
             default:
@@ -411,7 +419,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($list_product);
                 break;
             default:
@@ -432,7 +440,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($list_role);
                 break;
             default:
@@ -453,7 +461,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($list_major);
                 break;
             default:
@@ -544,7 +552,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($respone);
                 break;
             default:
@@ -574,7 +582,9 @@ class RestController extends Controller
                 ];
             } else {
                 if ($timeintimein->getMajorId() == 1) {
-
+                    $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
+                    $timeintimein->setUserTimeInId($user_id);
+                    $timeintimein->save();
                 } else {
                     $befor_timein = TimeinTimeout::findFirst([
                         'conditions' => 'id=:id:',
@@ -608,7 +618,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($timeintimein);
                 break;
             default:
@@ -676,7 +686,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($timeintimeout);
                 break;
             default:
@@ -728,7 +738,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($timein_timeout);
                 break;
             default:
@@ -762,7 +772,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($bill_detail);
                 break;
             default:
@@ -783,7 +793,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($conveyor);
                 break;
             default:
@@ -817,7 +827,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($respone);
                 break;
             default:
@@ -918,7 +928,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($respone);
                 break;
             default:
@@ -961,7 +971,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($respone);
                 break;
             default:
@@ -1004,7 +1014,7 @@ class RestController extends Controller
         switch ($format) {
             case 'json':
                 $contentType = 'application / json';
-                $encoding = 'UTF - 8';
+                $encoding = 'UTF-8';
                 $content = json_encode($respone);
                 break;
             default:
