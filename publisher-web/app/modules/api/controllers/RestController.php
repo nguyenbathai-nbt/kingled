@@ -685,7 +685,7 @@ class RestController extends Controller
                 );
                 break;
         }
-        //  $this->response->setContentType($contentType, $encoding);
+          $this->response->setContentType($contentType, $encoding);
         $this->response->setContent($content);
         return $this->response->send();
     }
@@ -927,7 +927,7 @@ class RestController extends Controller
                 );
                 break;
         }
-        // $this->response->setContentType($contentType, $encoding);
+         $this->response->setContentType($contentType, $encoding);
         $this->response->setContent($content);
         return $this->response->send();
     }
