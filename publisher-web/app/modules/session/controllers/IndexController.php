@@ -3,6 +3,7 @@
 namespace Publisher\Modules\Session\Controllers;
 
 use Publisher\Common\Models\Users\Product;
+use Publisher\Common\Models\Users\Users;
 use Publisher\Modules\Session\Forms\LoginForm;
 use Publisher\Modules\Session\Forms\SignUpForm;
 
@@ -162,7 +163,7 @@ class IndexController extends ControllerBase
             $post = $this->request->getPost();
             try {
 
-                $user = new Product();
+                $user = new Users();
                 if ($post['re_password'] != $post['password']) {
                     $this->flashSession->error($this->helper->translate("Password and Repasswrod don't match"));
                     $form->setEntity($post);
