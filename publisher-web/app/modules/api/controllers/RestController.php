@@ -582,9 +582,15 @@ class RestController extends Controller
                 ];
             } else {
                 if ($timeintimein->getMajorId() == 1) {
-                    $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
-                    $timeintimein->setUserTimeInId($user_id);
-                    $timeintimein->save();
+                    if ($timeintimein->getTimeIn() == null || empty($timeintimein->getTimeIn()) || $timeintimein->getTimeIn() == 'null' || $timeintimein->getTimeIn() == '') {
+                        $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
+                        $timeintimein->setUserTimeInId($user_id);
+                        $timeintimein->save();
+                    } else {
+                        $timeintimein = [
+                            'warning' => 'Thời gian vào đã được cập nhật từ trước'
+                        ];
+                    }
                 } else {
                     $befor_timein = TimeinTimeout::findFirst([
                         'conditions' => 'id=:id:',
@@ -597,14 +603,14 @@ class RestController extends Controller
                             'error' => 'Nghiệp vụ trước chưa cập nhật thời gian đóng. Vui lòng cập nhật thời gian'
                         ];
                     } else {
-                        if ($timeintimein->getTimeIn() != null || !empty($timeintimein->getTimeIn()) || $timeintimein->getTimeIn() != 'null') {
-                            $timeintimein = [
-                                'warning' => 'Thời gian vào đã được cập nhật từ trước'
-                            ];
-                        } else {
+                        if ($timeintimein->getTimeIn() == null || empty($timeintimein->getTimeIn()) || $timeintimein->getTimeIn() == 'null' || $timeintimein->getTimeIn() == '') {
                             $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
                             $timeintimein->setUserTimeInId($user_id);
                             $timeintimein->save();
+                        } else {
+                            $timeintimein = [
+                                'warning' => 'Thời gian vào đã được cập nhật từ trước'
+                            ];
                         }
 
                     }
@@ -664,15 +670,15 @@ class RestController extends Controller
                             'error' => 'Chưa cập nhật thời gian vào. Vui lòng cập nhật thời gian vào trước'
                         ];
                     } else {
-                        if ($timeintimeout->getTimeOut() != null || !empty($timeintimeout->getTimeOut()) || $timeintimeout->getTimeOut() != 'null') {
-                            $timeintimeout = [
-                                'warning' => 'Thời gian vào đã được cập nhật từ trước'
-                            ];
-                        } else {
+                        if ($timeintimeout->getTimeOut() == null || empty($timeintimeout->getTimeOut()) || $timeintimeout->getTimeOut() == 'null' || $timeintimeout->getTimeOut() == '') {
                             $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
                             $timeintimeout->setCountTime($timeintimeout->getCountTime() + strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
                             $timeintimeout->setUserTimeOutId($user_id);
                             $timeintimeout->save();
+                        } else {
+                            $timeintimeout = [
+                                'warning' => 'Thời gian ra đã được cập nhật từ trước'
+                            ];
                         }
                     }
                 }
