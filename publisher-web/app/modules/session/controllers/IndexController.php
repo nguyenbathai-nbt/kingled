@@ -172,7 +172,7 @@ class IndexController extends ControllerBase
                     $user->setId($user->getSequenceId());
                     $user->setRoleId('1');
                     $user->setStatusId('1');
-                    $error_check_validitions = Product::checkValidations($post);
+                    $error_check_validitions = Users::checkValidations($post);
                     if (count($error_check_validitions) != 0) {
                         foreach ($error_check_validitions as $message) {
                             $this->flashSession->error($this->helper->translate($message));
