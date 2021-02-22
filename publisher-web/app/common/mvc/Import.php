@@ -84,7 +84,7 @@ class Import extends \Phalcon\Mvc\User\Component {
             $listData = [];
             $currentRow = 0;
             foreach ($sheetData as $row) {
-                if($currentRow <1){
+                if($currentRow <4){
                     $currentRow++;
                     continue;
                 }
@@ -103,34 +103,6 @@ class Import extends \Phalcon\Mvc\User\Component {
         }
         return $data_import;
     }
-
-    public static function getDataBieu0() {
-        $import = include_once APPLICATION_PATH . '/../data/excel-tpl/import_bieu0.php';
-        $arr = $import[self::$model];
-        $dataError = [];
-        $outcome_period = \AcademicAffairs\Model\OutcomePeriod::findFirst([
-                    'conditions' => 'id=:id:',
-                    'bind' => [
-                        'id' => self::$fixData['outcome_period_id']
-                    ]
-        ]);
-        if (!$arr || self::$file == "") {
-            return null;
-        }
-        $constant = [
-            'USER_GENDER' => [
-                'N/A' => 0,
-                'Nam' => 1,
-                'Nữ' => 2
-            ]
-        ];
-        $data = PHPExcel_IOFactory::load(self::$file);
-        $sheetname = $data->getSheetNames();
-
-
-        return $data_import;
-    }
-
 
 
 }

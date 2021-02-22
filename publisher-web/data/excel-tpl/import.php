@@ -6,12 +6,12 @@ return [
             [
                 'title' => 'Tên',
                 'char' => 'B',
-                'field' => 'name',
+                'field' => 'code',
             ],
             [
                 'title' => 'Mã',
                 'char' => 'C',
-                'field' => 'code',
+                'field' => 'name',
             ],
             [
                 'title' => 'Mô tả',

@@ -271,12 +271,7 @@ class RestController extends Controller
     protected function getBillDetailByStatusId($status_id)
     {
         $format = $this->request->getQuery('format', null, 'json');
-        $list_bill = Bill::find([
-            'conditions' => 'status_id =:status_id:',
-            'bind' => [
-                'status_id' => $status_id
-            ]
-        ]);
+        $list_bill = Bill::find();
         $list = [];
         foreach ($list_bill as $item) {
             $bill_detail = BillDetail::findFirst([
