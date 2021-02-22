@@ -250,9 +250,10 @@ class RestController extends Controller
                         'created_time' => $bill_detail->getCreatedTime(),
                         'modified_time' => $bill_detail->getModifiedTime(),
                         'conveyor' => $bill_detail->conveyor,
+                        'status' => $bill->getStatusId()
                     ],
                     'timein_timeout' => $list_timein_timeout,
-                    'status' => $bill->getStatusId()
+
                 ];
             }
         }
