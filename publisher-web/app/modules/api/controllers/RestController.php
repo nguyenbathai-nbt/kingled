@@ -161,6 +161,12 @@ class RestController extends Controller
                 'bill_id' => $bill_id
             ]
         ]);
+        $bill= Bill::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $bill_id
+            ]
+        ]);
         if(!$bill_detail)
         {
             $list = [
@@ -245,7 +251,8 @@ class RestController extends Controller
                         'modified_time' => $bill_detail->getModifiedTime(),
                         'conveyor' => $bill_detail->conveyor,
                     ],
-                    'timein_timeout' => $list_timein_timeout
+                    'timein_timeout' => $list_timein_timeout,
+                    'status' => $bill->getStatusId()
                 ];
             }
         }
