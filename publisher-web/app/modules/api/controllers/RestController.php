@@ -232,7 +232,9 @@ class RestController extends Controller
                         'time_out' => $bill_detail->getTimeOut(),
                         'created_time' => $bill_detail->getCreatedTime(),
                         'modified_time' => $bill_detail->getModifiedTime(),
-                        'conveyor' => $bill_detail->getConveyorId()
+                        'conveyor' => $bill_detail->getConveyorId(),
+                        'status' => $bill->getStatusId(),
+                        'product_name'=>$bill_detail->product->getName()
                     ],
                     'timein_timeout' => $list_timein_timeout
                 ];
@@ -250,7 +252,8 @@ class RestController extends Controller
                         'created_time' => $bill_detail->getCreatedTime(),
                         'modified_time' => $bill_detail->getModifiedTime(),
                         'conveyor' => $bill_detail->conveyor,
-                        'status' => $bill->getStatusId()
+                        'status' => $bill->getStatusId(),
+                        'product_name'=>$bill_detail->product->getName()
                     ],
                     'timein_timeout' => $list_timein_timeout,
 
@@ -351,13 +354,13 @@ class RestController extends Controller
         $last_bill = Bill::findFirst([
             'conditions' => 'code LIKE :code:',
             'bind' => [
-                'code' => '%' . date('dmY') . '%'
+                'code' => '%' . date('mY') . '%'
             ],
             'order' => 'id DESC'
         ]);
         if ($last_bill) {
             $code = mb_split(' - ', $last_bill->getCode());
-            if ($code[0] == date('dmY')) {
+            if ($code[0] == date('mY')) {
                 $count = (int)$code[1] + 1;
                 if (strlen($count) == 1) {
                     $count = (string)'00' . (string)$count;
@@ -366,10 +369,10 @@ class RestController extends Controller
                 }
                 $new_code = $code[0] . ' - ' . $count;
             } else {
-                $new_code = date('dmY') . ' - ' . '001';
+                $new_code = date('mY') . ' - ' . '001';
             }
         } else {
-            $new_code = date('dmY') . ' - ' . '001';
+            $new_code = date('mY') . ' - ' . '001';
         }
 
         switch ($format) {
@@ -579,46 +582,47 @@ class RestController extends Controller
             ]
         ]);
         if ($timeintimein) {
-            if ($timeintimein->getDelayStatus() == 1) {
-                $timeintimein = [
-                    'error' => 'Hóa đơn đang trạng thái trì hoãn'
-                ];
-            } else {
-                if ($timeintimein->getMajorId() == 1) {
-                    if ($timeintimein->getTimeIn() == null || empty($timeintimein->getTimeIn()) || $timeintimein->getTimeIn() == 'null' || $timeintimein->getTimeIn() == '') {
+//            if ($timeintimein->getDelayStatus() == 1) {
+//                $timeintimein = [
+//                    'error' => 'Hóa đơn đang trạng thái trì hoãn'
+//                ];
+//            } else {
+//                if ($timeintimein->getMajorId() == 1) {
+//                    if ($timeintimein->getTimeIn() == null || empty($timeintimein->getTimeIn()) || $timeintimein->getTimeIn() == 'null' || $timeintimein->getTimeIn() == '') {
+//
                         $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
                         $timeintimein->setUserTimeInId($user_id);
                         $timeintimein->save();
-                    } else {
-                        $timeintimein = [
-                            'warning' => 'Thời gian vào đã được cập nhật từ trước'
-                        ];
-                    }
-                } else {
-                    $befor_timein = TimeinTimeout::findFirst([
-                        'conditions' => 'id=:id:',
-                        'bind' => [
-                            'id' => $timeintimein->getParentId()
-                        ]
-                    ]);
-                    if ($befor_timein->getTimeOut() == null || empty($befor_timein->getTimeOut()) || $befor_timein->getTimeOut() == 'null') {
-                        $timeintimein = [
-                            'error' => 'Nghiệp vụ trước chưa cập nhật thời gian đóng. Vui lòng cập nhật thời gian'
-                        ];
-                    } else {
-                        if ($timeintimein->getTimeIn() == null || empty($timeintimein->getTimeIn()) || $timeintimein->getTimeIn() == 'null' || $timeintimein->getTimeIn() == '') {
-                            $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
-                            $timeintimein->setUserTimeInId($user_id);
-                            $timeintimein->save();
-                        } else {
-                            $timeintimein = [
-                                'warning' => 'Thời gian vào đã được cập nhật từ trước'
-                            ];
-                        }
-
-                    }
-                }
-            }
+//                    } else {
+//                        $timeintimein = [
+//                            'warning' => 'Thời gian vào đã được cập nhật từ trước'
+//                        ];
+//                    }
+//                } else {
+//                    $befor_timein = TimeinTimeout::findFirst([
+//                        'conditions' => 'id=:id:',
+//                        'bind' => [
+//                            'id' => $timeintimein->getParentId()
+//                        ]
+//                    ]);
+//                    if ($befor_timein->getTimeOut() == null || empty($befor_timein->getTimeOut()) || $befor_timein->getTimeOut() == 'null') {
+//                        $timeintimein = [
+//                            'error' => 'Nghiệp vụ trước chưa cập nhật thời gian đóng. Vui lòng cập nhật thời gian'
+//                        ];
+//                    } else {
+//                        if ($timeintimein->getTimeIn() == null || empty($timeintimein->getTimeIn()) || $timeintimein->getTimeIn() == 'null' || $timeintimein->getTimeIn() == '') {
+//                            $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
+//                            $timeintimein->setUserTimeInId($user_id);
+//                            $timeintimein->save();
+//                        } else {
+//                            $timeintimein = [
+//                                'warning' => 'Thời gian vào đã được cập nhật từ trước'
+//                            ];
+//                        }
+//
+//                    }
+//                }
+//            }
         } else {
             $timeintimein = [
                 'error' => 'Không tìm thấy bản ghi'
@@ -663,28 +667,28 @@ class RestController extends Controller
                 ]
             ]);
             if ($timeintimeout) {
-                if ($timeintimeout->getDelayStatus() == 1) {
-                    $timeintimeout = [
-                        'error' => 'Hóa đơn đang trạng thái trì hoãn'
-                    ];
-                } else {
-                    if ($timeintimeout->getTimeIn() == null || empty($timeintimeout->getTimeIn()) || $timeintimeout->getTimeIn() == 'null') {
-                        $timeintimeout = [
-                            'error' => 'Chưa cập nhật thời gian vào. Vui lòng cập nhật thời gian vào trước'
-                        ];
-                    } else {
-                        if ($timeintimeout->getTimeOut() == null || empty($timeintimeout->getTimeOut()) || $timeintimeout->getTimeOut() == 'null' || $timeintimeout->getTimeOut() == '') {
+//                if ($timeintimeout->getDelayStatus() == 1) {
+//                    $timeintimeout = [
+//                        'error' => 'Hóa đơn đang trạng thái trì hoãn'
+//                    ];
+//                } else {
+//                    if ($timeintimeout->getTimeIn() == null || empty($timeintimeout->getTimeIn()) || $timeintimeout->getTimeIn() == 'null') {
+//                        $timeintimeout = [
+//                            'error' => 'Chưa cập nhật thời gian vào. Vui lòng cập nhật thời gian vào trước'
+//                        ];
+//                    } else {
+//                        if ($timeintimeout->getTimeOut() == null || empty($timeintimeout->getTimeOut()) || $timeintimeout->getTimeOut() == 'null' || $timeintimeout->getTimeOut() == '') {
                             $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
                             $timeintimeout->setCountTime($timeintimeout->getCountTime() + strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
                             $timeintimeout->setUserTimeOutId($user_id);
                             $timeintimeout->save();
-                        } else {
-                            $timeintimeout = [
-                                'warning' => 'Thời gian ra đã được cập nhật từ trước'
-                            ];
-                        }
-                    }
-                }
+//                        } else {
+//                            $timeintimeout = [
+//                                'warning' => 'Thời gian ra đã được cập nhật từ trước'
+//                            ];
+//                        }
+//                    }
+//                }
             } else {
                 $timeintimeout = [
                     'error' => 'Không tìm thấy bản ghi'

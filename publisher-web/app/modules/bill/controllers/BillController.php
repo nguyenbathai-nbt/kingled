@@ -111,13 +111,13 @@ class BillController extends DashboardControllerBase
         $last_bill = Bill::findFirst([
             'conditions' => 'code LIKE :code:',
             'bind' => [
-                'code' => '%' . date('dmY') . '%'
+                'code' => '%' . date('mY') . '%'
             ],
             'order' => 'id DESC'
         ]);
         if ($last_bill) {
             $code = mb_split('-', $last_bill->getCode());
-            if ($code[0] == date('dmY')) {
+            if ($code[0] == date('mY')) {
                 $count = (int)$code[1] + 1;
                 if (strlen($count) == 1) {
                     $count = (string)'00' . (string)$count;
@@ -126,10 +126,10 @@ class BillController extends DashboardControllerBase
                 }
                 $new_code = $code[0] . '-' . $count;
             } else {
-                $new_code = date('dmY') . '-' . '001';
+                $new_code = date('mY') . '-' . '001';
             }
         } else {
-            $new_code = date('dmY') . ' - ' . '001';
+            $new_code = date('mY') . ' - ' . '001';
         }
         return $new_code;
     }
