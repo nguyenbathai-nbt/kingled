@@ -7,12 +7,9 @@
         <div class="box-body">
             <div class="row">
                 <div class="col-md-6">
-                    {{ form.renderDecorated('group_name') }}
-                    {{ form.renderDecorated('import') }}
-                    <output id="list"><span><img style="height: 75px; margin: 5px" src="data:{{ badge_template.getImageType() }};base64,{{ badge_template.getImage() }}" ></span></output>
+                    {{ form.renderDecorated('name') }}
+                    {{ form.renderDecorated('code') }}
 
-                    {{ form.renderDecorated('description') }}
-                    {{ form.renderDecorated('default_url') }}
                 </div>
 
                 <div class="col-md-6">

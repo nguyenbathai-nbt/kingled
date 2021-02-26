@@ -69,7 +69,7 @@ class UserController extends DashboardControllerBase
         $auth = $this->session->get('auth-identity');
         if ($this->request->isPost()) {
             $post = $this->request->getPost();
-            $form->bind($post,$user);
+            $form->bind($post, $user);
             $user->setPassword('Kingled@2020');
             $error_check_validitions = Users::checkValidations($post);
             if (count($error_check_validitions) != 0) {

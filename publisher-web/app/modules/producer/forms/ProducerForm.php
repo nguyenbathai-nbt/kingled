@@ -25,5 +25,5 @@ class ProducerForm extends Form
         $this->add(Form::addElement('name', 'Tên chuyền', 'Text', ['required' => true]));
         $this->add(Form::addElement('code', 'Mã', 'Text', ['required' => true]));
     }
-    
+
 }

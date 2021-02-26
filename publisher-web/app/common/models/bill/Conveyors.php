@@ -7,7 +7,7 @@ namespace Publisher\Common\Models\Bill;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 
-class Conveyor extends Model
+class Conveyors extends Model
 {
     protected $id;
     protected $name;
@@ -16,13 +16,10 @@ class Conveyor extends Model
     protected $modified_time;
 
 
+
     public function getSource()
     {
         return "conveyor";
-    }
-    public function initialize()
-    {
-
     }
 
     /**
@@ -34,7 +31,7 @@ class Conveyor extends Model
     }
 
     /**
-     * @param mixed $id_
+     * @param mixed $id
      */
     public function setId($id)
     {
@@ -73,7 +70,6 @@ class Conveyor extends Model
         $this->code = $code;
     }
 
-
     /**
      * @return mixed
      */
@@ -105,21 +101,8 @@ class Conveyor extends Model
     {
         $this->modified_time = $modified_time;
     }
-
-
-
-
-    public function getSequenceId()
-    {
-        $connection = $this->getDI()->getShared("db");
-        $rs = $connection->query("select nextval('public.product_id_seq');");
-        $sid = $rs->fetchAll();
-        return $sid[0][0];
-    }
-
     public function beforeValidationOnCreate()
     {
-        $this->modified_time = date('Y-m-d G:i:s');
         $this->created_time = date('Y-m-d G:i:s');
 
     }
@@ -127,41 +110,6 @@ class Conveyor extends Model
     public function beforeValidationOnUpdate()
     {
         $this->modified_time = date('Y-m-d G:i:s');
-    }
-
-    public static function checkEmailExists($email)
-    {
-        $user = Product::findFirst([
-            'conditions' => 'email=:email:',
-            'bind' => [
-                'email' => $email
-            ]
-        ]);
-        if ($user) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static function checkValidations($post)
-    {
-
-        $username = self::findFirst([
-            'conditions' => 'username=:username:',
-            'bind' => [
-                'username' => $post['username']
-            ]
-        ]);
-
-        $error = [];
-
-        if ($username) {
-            $error[] = 'The username is already registered';
-        }
-
-        return $error;
-
     }
 
 }

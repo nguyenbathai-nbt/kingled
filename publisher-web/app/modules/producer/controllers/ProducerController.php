@@ -2,10 +2,9 @@
 
 namespace Publisher\Modules\Producer\Controllers;
 
-use Publisher\Common\Models\Badge\BadgeTemplate;
 use Publisher\Common\Models\Bill\Conveyor;
+use Publisher\Common\Models\Bill\Conveyors;
 use Publisher\Common\Models\Bill\Producer;
-use Publisher\Common\Models\Users\Users;
 use Publisher\Common\Mvc\DashboardControllerBase;
 use Publisher\Modules\Producer\Forms\ProducerForm;
 
@@ -37,9 +36,9 @@ class ProducerController extends DashboardControllerBase
             'bc',
             'producer_list'
         ];
-        $list_producer = Conveyor::find();
+        $list_producer = Conveyors::find();
         $count_recipient = [];
-        $total_list_producer = Conveyor::count();
+        $total_list_producer = Conveyors::count();
         if (count($list_producer) == 0) {
             $this->view->producers = null;
         } else {
@@ -55,31 +54,31 @@ class ProducerController extends DashboardControllerBase
     {
         $this->view->activemenu = [
             'bc',
-            'group_create'
+            'product_create'
         ];
         $this->view->names = [
             [
-                'label' => 'Create Group',
-                'href' => '/group/create'
+                'label' => 'Tạo mới người dùng',
+                'href' => '/producer/create'
             ]
 
         ];
         $form = new ProducerForm();
         $form->createconveyor();
 
-        $conveyor = new Conveyor();
-        $this->db->begin();
+        $conveyor = new Conveyors();
         if ($this->request->isPost()) {
             $post = $this->request->getPost();
             $form->bind($post, $conveyor);
-            if ($conveyor->save()) {
-                $this->flashSession->success($this->helper->translate('Thêm mới chuyền thành công'));
+            if ($conveyor->create()) {
+                $this->flashSession->success($this->helper->translate('Tạo chuyền thành công thành công'));
                 return $this->redirect('/producer');
             } else {
                 foreach ($conveyor->getMessages() as $message) {
                     $this->flashSession->error($this->helper->translate($message->getMessage()));
                 }
                 $form->setEntity($post);
+
             }
         }
         $this->view->form = $form;
@@ -89,21 +88,20 @@ class ProducerController extends DashboardControllerBase
     public function deleteAction($id)
     {
         $this->view->disable();
-        $product = Product::findFirst([
+        $conveyor = Conveyors::findFirst([
             'conditions' => 'id=:id:',
             'bind' => [
                 'id' => $id
             ]
         ]);
-        if ($product) {
-            $product->setStatusId('2');
-            $product->update();
+        if ($conveyor) {
+            $conveyor->delete();
 
-            $this->flashSession->success($this->helper->translate('Delete success'));
+            $this->flashSession->success($this->helper->translate('Xóa thành công'));
         } else {
-            $this->flashSession->warning($this->helper->translate('Not found product'));
+            $this->flashSession->warning($this->helper->translate('Không tìm thấy chuyền'));
         }
-        return $this->redirect('/product');
+        return $this->redirect('/producer');
 
     }
 
@@ -111,94 +109,40 @@ class ProducerController extends DashboardControllerBase
     {
         $this->view->activemenu = [
             'bc',
-            'group_edit'
+            'product_create'
         ];
         $this->view->names = [
             [
-                'label' => 'Edit Group',
-                'href' => '/group/edit'
+                'label' => 'Chỉnh sửa chuyền',
+                'href' => '/producer/edit'
             ]
 
         ];
-        $form = new GroupForm();
-        $form->editgroup();
+        $form = new ProducerForm();
+        $form->editconveyor();
 
-        $group = Group::findFirst([
-            'conditions' => 'id_=:id_:',
+        $conveyor = Conveyors::findFirst([
+            'conditions' => 'id=:id:',
             'bind' => [
-                'id_' => $id
+                'id' => $id
             ]
         ]);
         $auth = $this->session->get('auth-identity');
-        $this->db->begin();
         if ($this->request->isPost()) {
             $post = $this->request->getPost();
-            $form->setEntity($post);
-            $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            if (($_FILES['import']['size'] == 0)) {
-                $form->bind($post, $group);
-                $group->setOwnerId($auth['id']);
-                $group->setGroupEmail($auth['email']);
-                $group->setGroupUrl($group->getDefaultUrl() . '_' . $group->getId());
-                if (!$group->save()) {
-                    foreach ($group->getMessages() as $message) {
-                        $this->flashSession->error($this->helper->translate($message));
-                    }
-                    $form->setEntity($group);
-                } else {
-                    $this->db->commit();
-                    return $this->redirect('/group');
-                }
+            $form->bind($post, $conveyor);
+            if ($conveyor->update()) {
+                $this->flashSession->success($this->helper->translate('Tạo chuyền thành công thành công'));
+                return $this->redirect('/producer');
             } else {
-                $image_type = $finfo->file($_FILES['import']['tmp_name']);
-                if (($image_type == "image/png" || $image_type == "image/svg+xml" || $image_type == "image/svg")) {
-                    if ($_FILES['import']['size'] <= 20480) {
-                        move_uploaded_file($_FILES['import']['tmp_name'], BASE_PATH . "/data/upload-image/" . $_FILES['import']['name']);
-                        $form->bind($post, $group);
-                        $group->setOwnerId($auth['id']);
-                        $group->setGroupEmail($auth['email']);
-                        $group->setGroupUrl($group->getDefaultUrl() . '_' . $group->getId());
-                        if (!$group->save()) {
-                            foreach ($group->getMessages() as $message) {
-                                $this->flashSession->error($this->helper->translate($message));
-                            }
-                            $form->setEntity($group);
-                        } else {
-                            $badge_template = BadgeTemplate::findFirst([
-                                'conditions' => 'group_id=:group_id:',
-                                'bind' => [
-                                    'group_id' => $group->getId()
-                                ]
-                            ]);
-                            $badge_template->setGroupId($group->getId());
-                            $image_base = base64_encode(file_get_contents(BASE_PATH . "/data/upload-image/" . $_FILES['import']['name']));
-                            $badge_template->setImage($image_base);
-                            $badge_template->setImageType($image_type);
-                            if ($badge_template->save()) {
-                                $this->db->commit();
-                            }
-                            return $this->redirect('/group');
-                        }
-                    } else {
-                        $this->flashSession->error("File nhập lên có kích thước file vượt quá 20Kb");
-                        return $this->redirect('/group/create');
-                    }
-
-                } else {
-                    $this->flashSession->error("File nhập lên không đúng định dạng .png và .svg");
-                    return $this->redirect('/group/create');
+                foreach ($conveyor->getMessages() as $message) {
+                    $this->flashSession->error($this->helper->translate($message->getMessage()));
                 }
+                $form->setEntity($post);
+
             }
         } else {
-
-            $form->setEntity($group);
-            $badge_template = BadgeTemplate::findFirst([
-                'conditions' => 'group_id=:group_id:',
-                'bind' => [
-                    'group_id' => $id
-                ]
-            ]);
-            $this->view->badge_template = $badge_template;
+            $form->setEntity($conveyor);
         }
         $this->view->form = $form;
 
