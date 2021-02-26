@@ -7,6 +7,8 @@ use Publisher\Common\Models\Bill\Conveyor;
 use Publisher\Common\Models\Bill\Producer;
 use Publisher\Common\Models\Users\Users;
 use Publisher\Common\Mvc\DashboardControllerBase;
+use Publisher\Modules\Producer\Forms\ProducerForm;
+
 
 class ProducerController extends DashboardControllerBase
 {
@@ -62,66 +64,23 @@ class ProducerController extends DashboardControllerBase
             ]
 
         ];
-        $form = new GroupForm();
-        $form->creategroup();
+        $form = new ProducerForm();
+        $form->createconveyor();
 
-        $group = new Group();
-        $badge_template = new BadgeTemplate();
-        $auth = $this->session->get('auth-identity');
+        $conveyor = new Conveyor();
         $this->db->begin();
         if ($this->request->isPost()) {
             $post = $this->request->getPost();
-            $form->setEntity($post);
-            $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $image_type = $finfo->file($_FILES['import']['tmp_name']);
-            if (($image_type == "image/png" || $image_type == "image/svg+xml" || $image_type == "image/svg")) {
-                if ($_FILES['import']['size'] <= 20480) {
-                    move_uploaded_file($_FILES['import']['tmp_name'], BASE_PATH . "/data/upload-image/" . $_FILES['import']['name']);
-                    $form->bind($post, $group);
-                    $group->setId($group->getSequenceId());
-                    $group->setOwnerId($auth['id']);
-                    $group->setGroupEmail($auth['email']);
-                    $group->setGroupUrl($group->getDefaultUrl() . '_' . $group->getId());
-                    $group->setApiKey(' ');
-                    $group->setStatus('GR_ACTIVE');
-                    if (!$group->save()) {
-                        foreach ($group->getMessages() as $message) {
-                            $this->flashSession->error($this->helper->translate($message->getMessage()));
-                        }
-                        $form->setEntity($group);
-                    } else {
-                        $badge_template = new BadgeTemplate();
-                        $badge_template->setId($badge_template->getSequenceId());
-                        $badge_template->setGroupId($group->getId());
-                        $badge_template->setStatus('ACTIVE');
-
-                        $image_base = base64_encode(file_get_contents(BASE_PATH . "/data/upload-image/" . $_FILES['import']['name']));
-                        $badge_template->setImage($image_base);
-                        $badge_template->setImageType($image_type);
-                        if ($badge_template->save()) {
-                            $this->db->commit();
-                            return $this->redirect('/group');
-                        } else {
-                            $this->flashSession->error($this->helper->translate('Badgetemplate'));
-                            foreach ($badge_template->getMessages() as $message) {
-                                $this->flashSession->error($this->helper->translate($message->getMessage()));
-                            }
-
-
-                            $form->setEntity($group);
-                        }
-
-                    }
-                } else {
-                    $this->flashSession->error("Imported file has a file size in excess of 20Kb");
-                   // return $this->redirect('/group/create');
-                }
-
+            $form->bind($post, $conveyor);
+            if ($conveyor->save()) {
+                $this->flashSession->success($this->helper->translate('Thêm mới chuyền thành công'));
+                return $this->redirect('/producer');
             } else {
-                $this->flashSession->error("The import file is not in the correct format .png and .svg");
-               // return $this->redirect('/group/create');
+                foreach ($conveyor->getMessages() as $message) {
+                    $this->flashSession->error($this->helper->translate($message->getMessage()));
+                }
+                $form->setEntity($post);
             }
-
         }
         $this->view->form = $form;
 

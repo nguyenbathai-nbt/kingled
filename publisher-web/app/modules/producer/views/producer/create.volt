@@ -7,12 +7,8 @@
         <div class="box-body">
             <div class="row">
                 <div class="col-md-6">
-                    {{ form.renderDecorated('group_name') }}
-                    {{ form.renderDecorated('import') }}
-                    <output id="list"></output>
-
-                    {{ form.renderDecorated('description') }}
-                    {{ form.renderDecorated('default_url') }}
+                    {{ form.renderDecorated('name') }}
+                    {{ form.renderDecorated('code') }}
                 </div>
                 <div class="col-md-6">
                 </div>
