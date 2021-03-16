@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 
 define('BASE_PATH', dirname(__DIR__));
 define('APP_PATH', BASE_PATH . '/app');
-define('APPLICATION_PATH', __DIR__ . '/app');
+define('APPLICATION_PATH', __DIR__ . '/../app');
 define('MAIN_VIEW_PATH', APP_PATH . '/views');
 try {
 

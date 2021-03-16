@@ -11,7 +11,8 @@ $modules_web = [
     'bill',
     'api',
     'product',
-    'producer'
+    'producer',
+    'report'
 ];
 $default_module = 'session';
 

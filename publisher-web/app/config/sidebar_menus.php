@@ -84,21 +84,33 @@ return new \Phalcon\Config([
             ],
         ]
     ],
-    'export' => [
+    'exports' => [
         'active' => true,
         'iconCss' => 'fa fa-id-badge',
         'text' => 'Quản lý báo cáo',
         'children' => [
-            'product' => [
+            'export' => [
                 'iconCss' => 'fa fa-clone',
-                'text' => 'Danh sách chuyền',
-                'href' => '/producer'
+                'text' => 'Xuất báo cáo',
+                'href' => '/report'
             ],
-            'product_create' => [
-                'iconCss' => 'fa fa-folder-o',
-                'text' => 'Tạo mới chuyền',
-                'href' => '/producer/create'
+            'export_month' => [
+                'iconCss' => 'fa fa-clone',
+                'text' => 'Xuất bc theo tháng',
+                'href' => '/report/reportViaMonth'
             ],
+            'export_product' => [
+                'iconCss' => 'fa fa-clone',
+                'text' => 'Xuất bc theo sản phẩm',
+                'href' => '/report/reportViaProduct'
+            ],
+            'export_product_month' => [
+                'iconCss' => 'fa fa-clone',
+                'text' => 'Xuất bc theo sản phẩm và tháng',
+                'href' => '/report/reportViaProductAndMonth'
+            ],
+
+
         ]
     ],
 

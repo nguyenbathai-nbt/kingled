@@ -2,11 +2,11 @@
 
 namespace Publisher\Modules\Producer\Controllers;
 
-use Publisher\Common\Models\Bill\Conveyor;
+
 use Publisher\Common\Models\Bill\Conveyors;
 use Publisher\Common\Models\Bill\Producer;
 use Publisher\Common\Mvc\DashboardControllerBase;
-use Publisher\Modules\Producer\Forms\ProducerForm;
+use Publisher\Modules\Producer\Forms\ReportForm;
 
 
 class ProducerController extends DashboardControllerBase
@@ -63,7 +63,7 @@ class ProducerController extends DashboardControllerBase
             ]
 
         ];
-        $form = new ProducerForm();
+        $form = new ReportForm();
         $form->createconveyor();
 
         $conveyor = new Conveyors();
@@ -118,7 +118,7 @@ class ProducerController extends DashboardControllerBase
             ]
 
         ];
-        $form = new ProducerForm();
+        $form = new ReportForm();
         $form->editconveyor();
 
         $conveyor = Conveyors::findFirst([
@@ -131,7 +131,9 @@ class ProducerController extends DashboardControllerBase
         if ($this->request->isPost()) {
             $post = $this->request->getPost();
             $form->bind($post, $conveyor);
-            if ($conveyor->update()) {
+            if ($conveyor->update()
+
+            ) {
                 $this->flashSession->success($this->helper->translate('Tạo chuyền thành công thành công'));
                 return $this->redirect('/producer');
             } else {
