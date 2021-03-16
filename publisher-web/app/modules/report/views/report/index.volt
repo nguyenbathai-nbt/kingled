@@ -3,10 +3,8 @@
 
         <div class="pull">
             <form class="form-inline" id="transcript-form">
-                <button id="validateButtonExport1" type="submit" class="btn btn-flat btn-primary">Biểu 1</button>
-                <button id="validateButtonExport2" type="submit" class="btn btn-flat btn-primary">&nbsp;Biểu 2</button>
-                <button id="validateButtonExport3" type="submit" class="btn btn-flat btn-primary">&nbsp;Biểu 3</button>
-                </form>
+                <button id="validateButtonExport1" type="submit" class="btn btn-flat btn-primary">Xuất báo cáo</button>
+            </form>
         </div>
 
     </div>
@@ -47,27 +45,6 @@
 
         $("#validateButtonExport1").on("click", function () {
             validationExport('/report/exportReport');
-        });
-        $("#validateButtonExport2").on("click", function () {
-            validationExport('/learning-outcomes/distance-training-report/export2');
-        });
-        $("#validateButtonExport3").on("click", function () {
-            validationExport('/learning-outcomes/distance-training-report/export3');
-        });
-        $("#validateButtonExportB4").click(function (e) {
-            e.preventDefault();
-            $outcome_period_id = $("#outcome_period_id").val();
-            $unit_id = $("#unit_id").val();
-            if ($unit_id === "") {
-                bootbox.alert('Vui lòng chọn đơn vị');
-                return;
-            }
-            if ($outcome_period_id === null || $outcome_period_id == 0) {
-                bootbox.alert('Vui lòng chọn đợt xét');
-
-            } else {
-                window.location.href = "/learning-outcomes/distance-training-report/export4?outcome_period_id=" + $outcome_period_id + "&unit_id=" + $unit_id;
-            }
         });
     });
 
