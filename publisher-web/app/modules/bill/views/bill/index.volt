@@ -16,7 +16,6 @@
                             #
                         </th>
                         <th> {{ helper.translate('Tên HĐ') }}</th>
-                        <th> {{ helper.translate('Mã HĐ') }}</th>
                         <th> {{ helper.translate('Mã SP') }}</th>
                         <th> {{ helper.translate('Số lượng') }}</th>
                         <th> {{ helper.translate('Độ ưu tiên') }}</th>
@@ -29,7 +28,6 @@
                         <tr>
                             <td>{{ loop.index }}</td>
                             <td>{{ item.bill.getName() }}</td>
-                            <td>{{ item.bill.getCode() }}</td>
                             <td>{{ item.product.getCode() }}</td>
                             <td>{{ item.getQuantity() }}</td>
                             <td>{{ item.bill.getPriority() }}</td>
