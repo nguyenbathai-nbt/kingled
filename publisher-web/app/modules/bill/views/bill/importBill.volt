@@ -18,7 +18,7 @@
         </div>
         <div class="box-footer">
             <div class="pull-left">
-{#                <a href="" class="btn btn-default"><i class="icon left arrow"></i> Go back</a>#}
+                {#                <a href="" class="btn btn-default"><i class="icon left arrow"></i> Go back</a>#}
                 <input type="submit" class="btn btn-primary" value="Tải lên"/>
             </div>
         </div>
