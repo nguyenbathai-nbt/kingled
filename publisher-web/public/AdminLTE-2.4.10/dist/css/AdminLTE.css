@@ -3257,7 +3257,8 @@ table.text-center th {
   /*background: url(/cover2.jpg) no-repeat;*/
 
   /*background-image: url(/cover1.jpg);*/
-  background: url(/BadgeChain.png) left center no-repeat;
+  /*background: url(/BadgeChain.png) left center no-repeat;*/
+  background: url(/Kingled.png) center no-repeat;
   background-size: cover;
   position: relative;
   z-index: 1;

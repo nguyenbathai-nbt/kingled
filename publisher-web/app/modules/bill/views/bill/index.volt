@@ -5,7 +5,7 @@
         <div class="pull">
             <form class="form-inline" id="transcript-form">
                 {{form.renderInlineAll()}}
-                <button id="validateButtonExport1" type="submit" class="btn btn-flat btn-primary">Xuất báo cáo</button>
+                <button class="btn btn1 btn-flat btn-primary" type="submit"><i class="fa fa-search"></i> Tìm kiếm</button>
             </form>
         </div>
     </div>

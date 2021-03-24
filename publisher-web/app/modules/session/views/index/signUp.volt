@@ -1,7 +1,7 @@
 <div class="container-fluid login-container" style="height: 100vh">
     <div class="login-box">
-        <div class="login-logo">
-            <a href="/admin"><img height="150px" src="/logo.png" alt="logo"/></a>
+        <div class="login-logo" style="height: 90px">
+
         </div>
         <!-- /.login-logo -->
         <div class="login-box-body">

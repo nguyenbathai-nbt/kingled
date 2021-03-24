@@ -27,8 +27,7 @@ class BillForm extends Form
 
     public function searchbill()
     {
-        $this->add(Form::addElement('code_bill', 'Mã lệnh sản xuất', 'Text', ['required' => true]));
-        $this->add(Form::addElement('time_start', 'Thời gian', 'Date', ['required' => true]));
+        $this->add(Form::addElement('code_bill', 'Mã lệnh sản xuất', 'Text'));
     }
 
     public function editbill()
