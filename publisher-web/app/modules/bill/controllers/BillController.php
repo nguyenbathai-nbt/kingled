@@ -425,61 +425,61 @@ class BillController extends DashboardControllerBase
                 'code' => 'DANG_TIEN_HANG'
             ]
         ]);
-//        if ($this->request->isPost()) {
-//            $post = $this->request->getPost();
-//            $file = $_FILES['import']['tmp_name'];
-//            $data_import = $this->helper->import($file, 'IMPORT_TRANSCRIPT_BILL', $post)->getDataBill();
-//            $this->db->begin();
-//            $error = 0;
-//            foreach ($data_import as $item) {
-//                $bill = new Bill();
-//                $bill->setName($this->generateCodeBillImport($item['date']));
-//                $bill->setCode($this->generateCodeBillImport($item['date']));
-//                $bill->setStatusId($status_code->getId());
-//                $bill->setPriority((int)$item['priority']);
-//                if ($bill->save()) {
-////                    $bill_detail = new BillDetail();
-////
-////                    $bill_detail->setBillId($bill->getId());
-////                    $product = Product::findFirst([
-////                        'conditions' => 'code=:code:',
-////                        'bind' => [
-////                            'code'=>$item['product_code']
-////                        ]
-////                    ]);
-////                    $bill_detail->setProductId($product->getId());
-////                    $bill_detail->setQuantity($item['quantity']);
-////                    $bill_detail->setDescription($item['description']);
-////
-////                    if ($bill_detail->save()) {
-////                        $parent_id = null;
-////                        for ($i = 1; $i <= 5; $i++) {
-////                            $timein_timeout = new TimeinTimeout();
-////                            $timein_timeout->setBillId($bill->getId());
-////                            $timein_timeout->setProductId($bill_detail->getProductId());
-////                            $timein_timeout->setQuantity(0);
-////                            $timein_timeout->setMajorId($i);
-////                            $timein_timeout->setParentId($parent_id);
-////                            $timein_timeout->save();
-////                            $parent_id = $timein_timeout->getId();
-////                        }
-////                    }
+        if ($this->request->isPost()) {
+            $post = $this->request->getPost();
+            $file = $_FILES['import']['tmp_name'];
+            $data_import = $this->helper->import($file, 'IMPORT_TRANSCRIPT_BILL', $post)->getDataBill();
+            $this->db->begin();
+            $error = 0;
+            foreach ($data_import as $item) {
+                $bill = new Bill();
+                $bill->setName($this->generateCodeBillImport($item['date']));
+                $bill->setCode($this->generateCodeBillImport($item['date']));
+                $bill->setStatusId($status_code->getId());
+                $bill->setPriority((int)$item['priority']);
+                if ($bill->save()) {
+//                    $bill_detail = new BillDetail();
 //
-//                    $this->flashSession->success($this->helper->translate('Create bill success'));
-//                    return $this->redirect('/bill/importbill');
+//                    $bill_detail->setBillId($bill->getId());
+//                    $product = Product::findFirst([
+//                        'conditions' => 'code=:code:',
+//                        'bind' => [
+//                            'code'=>$item['product_code']
+//                        ]
+//                    ]);
+//                    $bill_detail->setProductId($product->getId());
+//                    $bill_detail->setQuantity($item['quantity']);
+//                    $bill_detail->setDescription($item['description']);
 //
-//                } else {
-//                    foreach ($bill->getMessages() as $message) {
-//                        $this->flashSession->error($this->helper->translate($message['_message']));
+//                    if ($bill_detail->save()) {
+//                        $parent_id = null;
+//                        for ($i = 1; $i <= 5; $i++) {
+//                            $timein_timeout = new TimeinTimeout();
+//                            $timein_timeout->setBillId($bill->getId());
+//                            $timein_timeout->setProductId($bill_detail->getProductId());
+//                            $timein_timeout->setQuantity(0);
+//                            $timein_timeout->setMajorId($i);
+//                            $timein_timeout->setParentId($parent_id);
+//                            $timein_timeout->save();
+//                            $parent_id = $timein_timeout->getId();
+//                        }
 //                    }
-//                    $form->setEntity($bill);
-//                }
-//            }
-//            if ($error == 0) {
-//                $this->db->commit();
-//            }
-//
-//        }
+
+                    $this->flashSession->success($this->helper->translate('Create bill success'));
+                    return $this->redirect('/bill/importbill');
+
+                } else {
+                    foreach ($bill->getMessages() as $message) {
+                        $this->flashSession->error($this->helper->translate($message['_message']));
+                    }
+                    $form->setEntity($bill);
+                }
+            }
+            if ($error == 0) {
+                $this->db->commit();
+            }
+
+        }
         $this->view->form = $form;
     }
 
