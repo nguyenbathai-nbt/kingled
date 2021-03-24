@@ -104,5 +104,40 @@ class Import extends \Phalcon\Mvc\User\Component {
         return $data_import;
     }
 
+    public static function getDataBill() {
+        $import = include_once BASE_PATH . '/data/excel-tpl/importbill.php';
+        $arr = $import[self::$model];
+        $dataError = [];
+
+
+        $data = PHPExcel_IOFactory::load(self::$file);
+        $sheetname = $data->getSheetNames();
+        for ($imm = 0; $imm < $data->getSheetCount(); ++$imm) {
+            $highestColumm = $data->setActiveSheetIndex($imm)->getHighestDataColumn();
+            $sheetData = $data->getActiveSheet()->toArray(null, true, true, true);
+            //Transcript
+            $listData = [];
+            $currentRow = 0;
+            foreach ($sheetData as $row) {
+                if($currentRow <4){
+                    $currentRow++;
+                    continue;
+                }
+                $item = [];
+                foreach ($arr['columns'] as $colum) {
+                    $item[$colum['field']] = trim($row[$colum['char']]);
+                }
+                $listData[] = $item;
+                $currentRow++;
+            }
+            if (count($listData)) {
+                $data_import =  $listData;
+            } else {
+                $data_import = "";
+            }
+        }
+        return $data_import;
+    }
+
 
 }

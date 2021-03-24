@@ -161,18 +161,17 @@ class RestController extends Controller
                 'bill_id' => $bill_id
             ]
         ]);
-        $bill= Bill::findFirst([
+        $bill = Bill::findFirst([
             'conditions' => 'id=:id:',
             'bind' => [
                 'id' => $bill_id
             ]
         ]);
-        if(!$bill_detail)
-        {
+        if (!$bill_detail) {
             $list = [
                 'error' => 'Không tìm thấy hóa đơn'
             ];
-        }else{
+        } else {
             $user = Users::findFirst([
                 'conditions' => 'id=:id:',
                 'bind' => [
@@ -234,7 +233,7 @@ class RestController extends Controller
                         'modified_time' => $bill_detail->getModifiedTime(),
                         'conveyor' => $bill_detail->getConveyorId(),
                         'status' => $bill->getStatusId(),
-                        'product_name'=>$bill_detail->product->getName()
+                        'product_name' => $bill_detail->product->getName()
                     ],
                     'timein_timeout' => $list_timein_timeout
                 ];
@@ -253,7 +252,7 @@ class RestController extends Controller
                         'modified_time' => $bill_detail->getModifiedTime(),
                         'conveyor' => $bill_detail->conveyor,
                         'status' => $bill->getStatusId(),
-                        'product_name'=>$bill_detail->product->getName()
+                        'product_name' => $bill_detail->product->getName()
                     ],
                     'timein_timeout' => $list_timein_timeout,
 
@@ -359,20 +358,20 @@ class RestController extends Controller
             'order' => 'id DESC'
         ]);
         if ($last_bill) {
-            $code = mb_split(' - ', $last_bill->getCode());
-            if ($code[0] == date('mY')) {
+            $code = mb_split('-', $last_bill->getCode());
+            if (strpos($code[0], date('mY')) == 2) {
                 $count = (int)$code[1] + 1;
                 if (strlen($count) == 1) {
                     $count = (string)'00' . (string)$count;
                 } else if (strlen($count) == 2) {
                     $count = (string)'0' . (string)$count;
                 }
-                $new_code = $code[0] . ' - ' . $count;
+                $new_code = date('dmY') . '-' . $count;
             } else {
-                $new_code = date('mY') . ' - ' . '001';
+                $new_code = date('dmY') . '-' . '001';
             }
         } else {
-            $new_code = date('mY') . ' - ' . '001';
+            $new_code = date('dmY') . '-' . '001';
         }
 
         switch ($format) {
@@ -590,9 +589,9 @@ class RestController extends Controller
 //                if ($timeintimein->getMajorId() == 1) {
 //                    if ($timeintimein->getTimeIn() == null || empty($timeintimein->getTimeIn()) || $timeintimein->getTimeIn() == 'null' || $timeintimein->getTimeIn() == '') {
 //
-                        $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
-                        $timeintimein->setUserTimeInId($user_id);
-                        $timeintimein->save();
+            $timeintimein->setTimeIn(date('Y-m-d H:i:s'));
+            $timeintimein->setUserTimeInId($user_id);
+            $timeintimein->save();
 //                    } else {
 //                        $timeintimein = [
 //                            'warning' => 'Thời gian vào đã được cập nhật từ trước'
@@ -654,12 +653,11 @@ class RestController extends Controller
                 'id' => $timeintimeout_id
             ]
         ]);
-        if($timeintimein->getTimeIn() == null && $timeintimein->getUserTimeInId() == null)
-        {
+        if ($timeintimein->getTimeIn() == null && $timeintimein->getUserTimeInId() == null) {
             $timeintimeout = [
                 'error' => 'Cập nhật thời gian vào trước'
             ];
-        }else{
+        } else {
             $timeintimeout = TimeinTimeout::findFirst([
                 'conditions' => 'id =:id:',
                 'bind' => [
@@ -678,10 +676,10 @@ class RestController extends Controller
 //                        ];
 //                    } else {
 //                        if ($timeintimeout->getTimeOut() == null || empty($timeintimeout->getTimeOut()) || $timeintimeout->getTimeOut() == 'null' || $timeintimeout->getTimeOut() == '') {
-                            $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
-                            $timeintimeout->setCountTime($timeintimeout->getCountTime() + strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn()));
-                            $timeintimeout->setUserTimeOutId($user_id);
-                            $timeintimeout->save();
+                $timeintimeout->setTimeOut(date('Y-m-d G:i:s'));
+                $timeintimeout->setCountTime($timeintimeout->getCountTime() + (strtotime($timeintimeout->getTimeOut()) - strtotime($timeintimeout->getTimeIn())));
+                $timeintimeout->setUserTimeOutId($user_id);
+                $timeintimeout->save();
 //                        } else {
 //                            $timeintimeout = [
 //                                'warning' => 'Thời gian ra đã được cập nhật từ trước'
@@ -708,7 +706,7 @@ class RestController extends Controller
                 );
                 break;
         }
-          $this->response->setContentType($contentType, $encoding);
+        $this->response->setContentType($contentType, $encoding);
         $this->response->setContent($content);
         return $this->response->send();
     }
@@ -780,9 +778,9 @@ class RestController extends Controller
             $bill_detail->setConveyorId($conveyor_id);
             $bill_detail->save();
 
-        }else{
-            $bill_detail=[
-                'error'=>'Không tìm thấy hóa đơn'
+        } else {
+            $bill_detail = [
+                'error' => 'Không tìm thấy hóa đơn'
             ];
         }
 
@@ -920,18 +918,30 @@ class RestController extends Controller
                 'bill_id' => $bill_id
             ]
         ]);
+        $status_code = Status::findFirst([
+            'conditions' => 'code=:code:',
+            'bind' => [
+                'code' => 'TAM_HOAN'
+            ]
+        ]);
+        $bill = Bill::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $bill_id
+            ]
+        ]);
         if ($timeintimeout) {
             foreach ($timeintimeout as $item) {
                 if ($item->getTimeIn() != null && $item->getTimeOut() != null) {
-
                 } else if ($item->getTimeIn() != null && $item->getTimeOut() == null) {
-                    $item->setCountTime($item->getCountTime() + strtotime(date('Y-m-d H:i:s')) - strtotime($item->getTimeIn()));
-
+                    $item->setCountTime($item->getCountTime() + (strtotime(date('Y-m-d H:i:s')) - strtotime($item->getTimeIn())));
                 }
-                $item->setDelayStatus('1');
+                $item->setDelayStatus($status_code->getId());
                 $item->update();
 
             }
+            $bill->setStatusId($status_code->getId());
+            $bill->update();
             $respone = [
                 'success' => 'Trì hoãn hóa đơn thành công'
             ];
@@ -954,7 +964,7 @@ class RestController extends Controller
                 );
                 break;
         }
-         $this->response->setContentType($contentType, $encoding);
+        $this->response->setContentType($contentType, $encoding);
         $this->response->setContent($content);
         return $this->response->send();
     }
@@ -968,6 +978,18 @@ class RestController extends Controller
                 'bill_id' => $bill_id
             ]
         ]);
+        $status_code = Status::findFirst([
+            'conditions' => 'code=:code:',
+            'bind' => [
+                'code' => 'DANG_TIEN_HANG'
+            ]
+        ]);
+        $bill = Bill::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $bill_id
+            ]
+        ]);
         if ($timeintimeout) {
             foreach ($timeintimeout as $item) {
                 if ($item->getTimeIn() != null && $item->getTimeOut() != null) {
@@ -978,6 +1000,11 @@ class RestController extends Controller
                 $item->setDelayStatus(null);
                 $item->update();
             }
+            $bill->setStatusId($status_code->getId());
+            $bill->update();
+            $respone = [
+                'success' => 'Tắt trì hoãn hóa đơn thành công'
+            ];
         } else {
             $respone = [
                 'error' => 'Không tìm thấy bản ghi'

@@ -40,7 +40,7 @@ class ReportForm extends Form
     }
     public function viaProduct()
     {
-        $this->add(Form::addElement('product_id', 'Tên sản phẩm', 'Select', ['data-type' => 'select2', 'using' => ['id', 'name']], Product::find()));
+        $this->add(Form::addElement('product_id', 'Tên sản phẩm', 'Select', ['data-type' => 'select2', 'using' => ['id', 'code']], Product::find()));
 
     }
     public function viaMonthProduct()
@@ -60,7 +60,7 @@ class ReportForm extends Form
             '12'=>'12',
         ]));
         $this->add(Form::addElement('year', 'Năm', 'Text'));
-        $this->add(Form::addElement('product_id', 'Tên sản phẩm', 'Select', ['data-type' => 'select2', 'using' => ['id', 'name']], Product::find()));
+        $this->add(Form::addElement('product_id', 'Tên sản phẩm', 'Select', ['data-type' => 'select2', 'using' => ['id', 'code']], Product::find()));
 
     }
 

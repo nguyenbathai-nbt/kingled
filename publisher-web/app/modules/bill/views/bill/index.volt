@@ -3,6 +3,10 @@
     <div class="box-header">
         <div>{{ this.flashSession.output() }}</div>
         <div class="pull">
+            <form class="form-inline" id="transcript-form">
+                {{form.renderInlineAll()}}
+                <button id="validateButtonExport1" type="submit" class="btn btn-flat btn-primary">Xuất báo cáo</button>
+            </form>
         </div>
     </div>
     <div class="box-body table-responsive">

@@ -8,13 +8,10 @@
             <div class="row">
                 <div class="col-md-6">
                     {{ form.renderDecorated('name') }}
-                    {{ form.renderDecorated('code') }}
-                    {{ form.renderDecorated('quantity') }}
                     {{ form.renderDecorated('product_id') }}
+                    {{ form.renderDecorated('product_name') }}
+                    {{ form.renderDecorated('quantity') }}
                     {{ form.renderDecorated('conveyor_id') }}
-
-
-
                 </div>
 
                 <div class="col-md-6">
@@ -27,8 +24,8 @@
         </div>
         <div class="box-footer">
             <div class="pull-right">
-                <a href="{{ url.get() }}bill" class="btn btn-default"><i class="icon left arrow"></i> Go back</a>
-                <input type="submit" class="btn btn-primary" value="Save"/>
+                <a href="{{ url.get() }}bill" class="btn btn-default"><i class="icon left arrow"></i> Trở về</a>
+                <input type="submit" class="btn btn-primary" value="Lưu"/>
             </div>
         </div>
     </div>
@@ -123,19 +120,32 @@
             <div>Don't have data</div>
         {% endif %}
     </div>
-    <script type="text/javascript" src="/public/js/jquery.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $('#btn_quantity').click(function () {
                 $.ajax({
                     type: 'Post',
                     url: "{{ url.get() }}bill/updateQuantity/{{ id_time.getId() }}",
-                    data: {
-                        quantity: $('#quantity_product').val()
-                    },
+
                     dataType: 'json',
                     complete: function () {
                         window.location.reload();
+                    }
+                });
+            });
+            $('#product_id').on('select2:select', function (e) {
+                var data = e.params.data;
+                var url = "{{ url.get() }}bill/displayNameProductById/" + data.id;
+                $.ajax({
+                    type: 'Post',
+                    url: url,
+                    data: {
+                        quantity: data.id
+                    },
+                    dataType: 'json',
+                    complete: function (response) {
+                        $('#product_name').val(response.responseJSON);
+
                     }
                 });
             });

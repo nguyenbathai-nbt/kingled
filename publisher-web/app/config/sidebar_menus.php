@@ -31,17 +31,22 @@ return new \Phalcon\Config([
     'bill' => [
         'active' => true,
         'iconCss' => 'fa fa-id-badge',
-        'text' => 'Quản lý hóa đơn',
+        'text' => 'Quản lý lệnh sản xuất',
         'children' => [
             'bill_list' => [
                 'iconCss' => 'fa fa-clone',
-                'text' => 'Danh sách hóa đơn',
+                'text' => 'Danh sách lệnh sản xuất',
                 'href' => '/bill'
             ],
             'bill_create' => [
                 'iconCss' => 'fa fa-folder-o',
-                'text' => 'Tạo mới hóa đơn',
+                'text' => 'Tạo mới lệnh sản xuất',
                 'href' => '/bill/create'
+            ],
+            'bill_create_import' => [
+                'iconCss' => 'fa fa-folder-o',
+                'text' => 'Nhập lệnh sản xuất',
+                'href' => '/bill/importbill'
             ],
         ]
     ],

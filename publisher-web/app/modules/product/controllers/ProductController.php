@@ -95,7 +95,7 @@ class ProductController extends DashboardControllerBase
     {
         $this->view->activemenu = [
             'product',
-            'product_list   '
+            'product_create_excel'
         ];
         $this->view->names = [
             [
@@ -122,6 +122,10 @@ class ProductController extends DashboardControllerBase
                 if ($product->save()) {
 
                 } else {
+                    foreach ($product->getMessages() as $message) {
+                        $this->flashSession->error($item['code']);
+                        $this->flashSession->error($this->helper->translate($message['_message']));
+                    }
                     $error = 1;
                     break;
                 }
