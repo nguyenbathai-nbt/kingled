@@ -298,7 +298,9 @@ class BillController extends DashboardControllerBase
                 'conveyor_id' => $bill_detail->getConveyorId()
             ]);
             $form->setEntity($bill);
+            $this->view->delay = $bill->status->getCode() == 'TAM_HOAN' ? 1 : 0;
             $this->view->bills = $bill;
+            $this->view->bill_id = $bill->getId();
             $this->view->timeintimeout = $timein_timeout;
         }
         $this->view->id_time = TimeinTimeout::findFirst([
@@ -538,6 +540,79 @@ class BillController extends DashboardControllerBase
             }
         }
         $this->view->form = $form;
+    }
+
+    public function delayBillAction($bill_id)
+    {
+        $this->view->disable();
+        $timeintimeout = TimeinTimeout::find([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $bill_id
+            ]
+        ]);
+        $status_code = Status::findFirst([
+            'conditions' => 'code=:code:',
+            'bind' => [
+                'code' => 'TAM_HOAN'
+            ]
+        ]);
+        $bill = Bill::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $bill_id
+            ]
+        ]);
+        if ($timeintimeout) {
+            foreach ($timeintimeout as $item) {
+                if ($item->getTimeIn() != null && $item->getTimeOut() != null) {
+                } else if ($item->getTimeIn() != null && $item->getTimeOut() == null) {
+                    $item->setCountTime($item->getCountTime() + (strtotime(date('Y-m-d H:i:s')) - strtotime($item->getTimeIn())));
+                }
+                $item->setDelayStatus($status_code->getId());
+                $item->update();
+            }
+            $bill->setStatusId($status_code->getId());
+            $bill->update();
+        }
+        return $this->redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    public function turnOffDelayBillAction($bill_id)
+    {
+        $this->view->disable();
+        $timeintimeout = TimeinTimeout::find([
+            'conditions' => 'bill_id=:bill_id:',
+            'bind' => [
+                'bill_id' => $bill_id
+            ]
+        ]);
+        $status_code = Status::findFirst([
+            'conditions' => 'code=:code:',
+            'bind' => [
+                'code' => 'DANG_TIEN_HANG'
+            ]
+        ]);
+        $bill = Bill::findFirst([
+            'conditions' => 'id=:id:',
+            'bind' => [
+                'id' => $bill_id
+            ]
+        ]);
+        if ($timeintimeout) {
+            foreach ($timeintimeout as $item) {
+                if ($item->getTimeIn() != null && $item->getTimeOut() != null) {
+
+                } else if ($item->getTimeIn() != null && $item->getTimeOut() == null) {
+                    $item->setTimeIn(date('Y-m-d H:i:s'));
+                }
+                $item->setDelayStatus(null);
+                $item->update();
+            }
+            $bill->setStatusId($status_code->getId());
+            $bill->update();
+        }
+        return $this->redirect($_SERVER['HTTP_REFERER']);
     }
 
 

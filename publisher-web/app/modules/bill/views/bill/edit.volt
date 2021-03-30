@@ -24,7 +24,13 @@
         </div>
         <div class="box-footer">
             <div class="pull-right">
-                <a href="{{ url.get() }}bill" class="btn btn-default"><i class="icon left arrow"></i> Trở về</a>
+                {% if delay is 1 %}
+                    <button id="btn_turnoff_delay" class="btn btn-primary"> Tắt tạm hoãn</button>
+                {% else %}
+                    <button id="btn_delay" class="btn btn-primary"> Tạm hoãn</button>
+                {% endif %}
+
+{#                <a href="{{ url.get() }}bill" class="btn btn-default"><i class="icon left arrow"></i> Trở về</a>#}
                 <input type="submit" class="btn btn-primary" value="Lưu"/>
             </div>
         </div>
@@ -122,6 +128,28 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
+            $('#btn_delay').click(function () {
+                $.ajax({
+                    type: 'Post',
+                    url: "{{ url.get() }}bill/delayBill/{{ bill_id }}",
+
+                    dataType: 'json',
+                    complete: function () {
+                        window.location.reload();
+                    }
+                });
+            });
+            $('#btn_turnoff_delay').click(function () {
+                $.ajax({
+                    type: 'Post',
+                    url: "{{ url.get() }}bill/turnOffDelayBill/{{ bill_id }}",
+
+                    dataType: 'json',
+                    complete: function () {
+                        window.location.reload();
+                    }
+                });
+            });
             $('#btn_quantity').click(function () {
                 $.ajax({
                     type: 'Post',
